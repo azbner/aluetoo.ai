@@ -7,10 +7,12 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
   <script>
     tailwind.config = {
       corePlugins: {
-        preflight: true, // Laisse Tailwind nettoyer les marges par défaut
+        preflight: true,
       }
     }
   </script>
@@ -23,20 +25,26 @@
     
     <aside class="alu-sidebar">
       <div class="alu-sidebar-top">
-        <button class="alu-menu-btn">☰</button>
+        <button class="alu-menu-btn">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="alu-brand">
-          <div class="alu-brand-icon" style="color: #9b72cb;">✦</div>
+          <div class="alu-brand-icon" style="background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem; font-weight: bold;">✦</div>
           <span class="alu-brand-name">Aluetoo</span>
         </div>
       </div>
 
       <button class="alu-new-chat">
-        <span>+</span> Nouvelle conversation
+        <span class="material-symbols-outlined">add</span> Nouvelle conversation
       </button>
 
       <div class="alu-nav-items">
-        <button class="alu-nav-item">🔍 Recherche de discussions</button>
-        <button class="alu-nav-item">📚 Bibliothèque</button>
+        <button class="alu-nav-item">
+          <span class="material-symbols-outlined">search</span> Recherche de discussions
+        </button>
+        <button class="alu-nav-item">
+          <span class="material-symbols-outlined">description</span> Bibliothèque
+        </button>
       </div>
 
       <div class="alu-history-section">
@@ -47,19 +55,23 @@
       </div>
 
       <div class="alu-activity">
-        <button class="alu-nav-item">🕒 Activité</button>
+        <button class="alu-nav-item">
+          <span class="material-symbols-outlined">history</span> Activité
+        </button>
       </div>
 
       <div class="alu-user-block">
         <div class="alu-user-row">
-          <div class="alu-avatar">LC</div>
+          <div class="alu-avatar" style="color: white; font-weight: bold; font-size: 0.85rem;">LC</div>
           <div class="alu-user-info">
             <p class="alu-user-name">Léo Ciach</p>
           </div>
-          <button class="alu-settings-btn">⚙️</button>
+          <button class="alu-settings-btn">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
         </div>
         <div class="alu-loc-block">
-          <div class="alu-loc-icon">📍</div>
+          <span class="material-symbols-outlined" style="font-size: 16px; margin-top: 2px;">location_on</span>
           <div>
             <p class="alu-loc-name">Jette, Belgique</p>
             <p class="alu-loc-desc">En fonction de votre lieu de résidence</p>
@@ -79,7 +91,7 @@
         </div>
         <div class="alu-topbar-right">
           <button class="alu-upgrade-btn">
-            <span>✦</span> Passez à une formule supérieure
+            <span class="material-symbols-outlined" style="font-size: 18px;">auto_awesome</span> Passez à une formule supérieure
           </button>
         </div>
       </div>
@@ -88,7 +100,6 @@
         <div class="alu-welcome">
           <h1 class="alu-welcome-title">Avez-vous de nouvelles idées ?</h1>
         </div>
-        
         <div class="alu-messages" id="chat-messages"></div>
       </div>
 
@@ -98,11 +109,18 @@
           
           <div class="alu-composer-bar">
             <div class="alu-composer-tools-left">
-              <button class="alu-tool-btn alu-attach-btn">+</button>
+              <button class="alu-tool-btn alu-attach-btn">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+              <button class="alu-tool-btn">
+                <span class="material-symbols-outlined">image</span>
+              </button>
             </div>
-            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 8px;">
+            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
               <span class="alu-model-pill">⚡ Flash</span>
-              <button class="alu-send-btn">➔</button>
+              <button class="alu-send-btn" style="background: #333537; color: #7a7e84;" disabled>
+                <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+              </button>
             </div>
           </div>
         </div>
