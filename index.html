@@ -134,7 +134,8 @@
           </div>
         </div>
         <div class="alu-topbar-right">
-          <button class="alu-upgrade-btn">
+          <!-- Ajout d'un identifiant id="upgrade-btn" pour capter le clic -->
+          <button class="alu-upgrade-btn" id="upgrade-btn">
             <span class="material-symbols-outlined" style="font-size: 18px;">auto_awesome</span> Passez à une formule supérieure
           </button>
         </div>
@@ -170,6 +171,25 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Menu Pop-up pour le Code Bonus Quotidien -->
+  <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
+      <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
+      <p class="text-xs text-[#9aa0a6] mb-4">Voici le code secret d'aujourd'hui (valable 24h). Entrez-le ci-dessous pour obtenir +1 message bonus sur Aluetoo Fast Lite !</p>
+      
+      <div class="bg-[#131314] border border-[#303133] rounded-xl py-3 px-4 mb-4 font-mono text-xl text-[#8ab4f8] tracking-widest font-bold select-all" id="daily-code-display">
+        ...
+      </div>
+      
+      <input type="text" id="bonus-code-input" class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8] text-white mb-4 text-center uppercase font-mono" placeholder="Recopiez le code ici">
+      
+      <div class="flex justify-end gap-2 w-full">
+        <button id="close-bonus-modal" class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition">Fermer</button>
+        <button id="submit-bonus-btn" class="bg-[#4285f4] hover:bg-[#357ae8] text-white rounded-xl px-4 py-2 text-sm font-medium transition">Activer mon bonus</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -335,6 +355,19 @@
       checkGlobalLimits();
     }
 
+    // Fonction auxiliaire pour fabriquer le code basé sur le jour et le mois actuel
+    function getDailyCodeDetails() {
+      const d = new Date();
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      
+      const dateStr = `${year}-${month}-${day}`;
+      const code = `ALU-${day}${month}`;
+      
+      return { dateStr, code };
+    }
+
     function setupUI() {
       const modelToggle = document.getElementById("model-menu-toggle");
       const modelDropdown = document.getElementById("model-dropdown");
@@ -402,6 +435,55 @@
           backdrop.classList.add("hidden");
         });
       }
+
+      // --- LOGIQUE AJOUTÉE : INTERACTION AVEC LE CODE DE MESSAGE BONUS ---
+      const upgradeBtn = document.getElementById("upgrade-btn");
+      const bonusModal = document.getElementById("bonus-modal");
+      const closeBonusModal = document.getElementById("close-bonus-modal");
+      const submitBonusBtn = document.getElementById("submit-bonus-btn");
+      const bonusInput = document.getElementById("bonus-code-input");
+      const dailyCodeDisplay = document.getElementById("daily-code-display");
+
+      upgradeBtn.addEventListener("click", () => {
+        const { code } = getDailyCodeDetails();
+        dailyCodeDisplay.innerText = code;
+        bonusInput.value = "";
+        bonusModal.classList.remove("hidden");
+      });
+
+      closeBonusModal.addEventListener("click", () => {
+        bonusModal.classList.add("hidden");
+      });
+
+      submitBonusBtn.addEventListener("click", () => {
+        const { dateStr, code } = getDailyCodeDetails();
+        const enteredCode = bonusInput.value.trim().toUpperCase();
+
+        if (enteredCode !== code) {
+          alert("Code incorrect pour aujourd'hui. Vérifiez bien les caractères.");
+          return;
+        }
+
+        const keyClaimed = `alu_bonus_claimed_${currentUser.email}_${dateStr}`;
+        if (localStorage.getItem(keyClaimed)) {
+          alert("Vous avez déjà récupéré votre message bonus aujourd'hui ! Revenez demain.");
+          return;
+        }
+
+        const usage = getUsage();
+        
+        // Soustrait 1 à la consommation actuelle pour donner le crédit gratuit bonus
+        usage["fast-lite"] -= 1;
+        
+        saveUsage(usage);
+        localStorage.setItem(keyClaimed, "true");
+
+        alert("Félicitations ! 1 message bonus a été ajouté à votre compteur Aluetoo Fast Lite.");
+        bonusModal.classList.add("hidden");
+        
+        updateLimitCountersDisplay();
+        checkGlobalLimits();
+      });
     }
 
     async function handleSendMessage() {
