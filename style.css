@@ -710,3 +710,69 @@ textarea, input, select { font: inherit; color: inherit; }
 [dir="rtl"] .alu-history-title-btn { text-align: right; }
 [dir="rtl"] .alu-nav-item { text-align: right; }
 [dir="rtl"] .alu-attach-menu { left: auto; right: 0; }
+/* ═══════════════ AJOUT RESPONSIVE (À METTRE TOUT EN BAS) ═══════════════ */
+
+@media (max-width: 1024px) {
+  /* La grille principale passe sur une seule colonne */
+  .alu-app {
+    grid-template-columns: 1fr;
+  }
+
+  /* La barre latérale devient un tiroir flottant */
+  .alu-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Elle s'ouvre avec la classe .open gérée par le JS */
+  .alu-sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* On affiche le bouton menu */
+  .alu-menu-btn {
+    display: flex !important;
+  }
+
+  /* Si la barre est fermée, le bouton se place en haut à gauche de l'écran principal */
+  .alu-sidebar:not(.open) .alu-menu-btn {
+    position: fixed;
+    left: 16px;
+    top: 14px;
+    z-index: 60;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+  }
+
+  /* On décale la topbar pour ne pas chevaucher le bouton menu */
+  .alu-topbar {
+    padding-left: 76px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Ajustements fins pour les petits écrans de smartphones */
+  .alu-topbar {
+    padding-left: 64px;
+    padding-right: 16px;
+  }
+
+  .alu-sidebar:not(.open) .alu-menu-btn {
+    left: 12px;
+    top: 14px;
+  }
+
+  .alu-conversation {
+    padding: 0 16px;
+  }
+
+  .alu-composer-wrap {
+    padding: 0 12px 12px;
+  }
+}
