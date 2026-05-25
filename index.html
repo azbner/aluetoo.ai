@@ -68,17 +68,12 @@
         <span class="material-symbols-outlined">add</span> Nouvelle conversation
       </button>
 
-      <div class="px-3 my-2 relative">
-        <span class="material-symbols-outlined absolute left-5 top-2.5 text-xs text-[#9aa0a6]" style="font-size:18px;">search</span>
-        <input type="text" id="history-search" placeholder="Rechercher une discussion..." class="w-full bg-[#131314] border border-[#303133] text-xs rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-[#8ab4f8]">
-      </div>
-
       <div class="alu-nav-items">
-        <button class="alu-nav-item" id="preferences-toggle-btn">
-          <span class="material-symbols-outlined">settings</span> Mémoire & Préférences
+        <button class="alu-nav-item">
+          <span class="material-symbols-outlined">search</span> Recherche de discussions
         </button>
-        <button class="alu-nav-item" id="theme-toggle-btn">
-          <span class="material-symbols-outlined">dark_mode</span> Changer de thème
+        <button class="alu-nav-item">
+          <span class="material-symbols-outlined">description</span> Bibliothèque
         </button>
       </div>
 
@@ -146,56 +141,29 @@
       </div>
 
       <div class="alu-conversation" id="conversation-container">
-        <div class="alu-welcome flex flex-col items-center justify-center text-center px-4" id="welcome-screen">
-          <h1 class="alu-welcome-title mb-8" id="welcome-text">Avez-vous de nouvelles idées ?</h1>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl w-full mt-4">
-            <button class="suggestion-card bg-[#1e1f20] border border-[#303133] hover:border-[#4a4b4d] text-left p-4 rounded-xl text-sm transition" data-prompt="Rédige un email professionnel pour annoncer la fin d'un projet de développement informatique.">
-              <span class="block font-medium mb-1">✍️ Rédiger un email</span>
-              <span class="text-[#9aa0a6] text-xs">Annoncer proprement la clôture d'un projet</span>
-            </button>
-            <button class="suggestion-card bg-[#1e1f20] border border-[#303133] hover:border-[#4a4b4d] text-left p-4 rounded-xl text-sm transition" data-prompt="Explique le fonctionnement des API REST et de l'architecture Client-Serveur en termes simples.">
-              <span class="block font-medium mb-1">💡 Expliquer un concept</span>
-              <span class="text-[#9aa0a6] text-xs">Comprendre l'architecture des API simplement</span>
-            </button>
-            <button class="suggestion-card bg-[#1e1f20] border border-[#303133] hover:border-[#4a4b4d] text-left p-4 rounded-xl text-sm transition" data-prompt="Génère une fonction JavaScript pour trier récursivement un tableau d'objets imbriqués.">
-              <span class="block font-medium mb-1">💻 Coder une fonction</span>
-              <span class="text-[#9aa0a6] text-xs">Tri récursif complexe en JavaScript</span>
-            </button>
-            <button class="suggestion-card bg-[#1e1f20] border border-[#303133] hover:border-[#4a4b4d] text-left p-4 rounded-xl text-sm transition" data-prompt="Donne-moi 5 idées créatives de fonctionnalités innovantes pour une application de productivité.">
-              <span class="block font-medium mb-1">🚀 Remue-méninges</span>
-              <span class="text-[#9aa0a6] text-xs">Trouver des fonctionnalités innovantes</span>
-            </button>
-          </div>
+        <div class="alu-welcome" id="welcome-screen">
+          <h1 class="alu-welcome-title" id="welcome-text">Avez-vous de nouvelles idées ?</h1>
         </div>
         <div class="alu-messages" id="chat-messages"></div>
       </div>
 
       <div class="alu-composer-wrap">
-        <div class="text-center text-[10px] text-[#7a7e84] mb-2 px-4">
-          Aluetoo AI peut faire des erreurs. Pensez à vérifier ses réponses importantes.
-        </div>
         <div class="alu-composer" id="composer-box">
-          <textarea class="alu-textarea" id="chat-input" placeholder="Demandez à Aluetoo" rows="1" style="max-height: 200px; resize: none;"></textarea>
+          <textarea class="alu-textarea" id="chat-input" placeholder="Demandez à Aluetoo" rows="1"></textarea>
           
           <div class="alu-composer-bar">
             <div class="alu-composer-tools-left">
-              <button class="alu-tool-btn alu-attach-btn" title="Ajouter un document" onclick="document.getElementById('hidden-file-input').click()">
+              <button class="alu-tool-btn alu-attach-btn">
                 <span class="material-symbols-outlined">add</span>
               </button>
-              <button class="alu-tool-btn" title="Ajouter une image" onclick="document.getElementById('hidden-file-input').click()">
+              <button class="alu-tool-btn">
                 <span class="material-symbols-outlined">image</span>
               </button>
-              <button class="alu-tool-btn text-red-400" id="voice-btn" title="Saisie vocale">
-                <span class="material-symbols-outlined" id="mic-icon">mic</span>
-              </button>
-              <input type="file" id="hidden-file-input" class="hidden">
             </div>
             <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
               <span class="alu-model-pill" id="input-model-indicator">⚡ Fast Lite</span>
-              
-              <button class="alu-send-btn flex items-center justify-center w-8 h-8 rounded-full transition" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
-                <span class="material-symbols-outlined" id="send-icon" style="font-size: 20px;">arrow_forward</span>
+              <button class="alu-send-btn" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
+                <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
               </button>
             </div>
           </div>
@@ -204,28 +172,10 @@
     </main>
   </div>
 
-  <div id="preferences-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-lg shadow-2xl text-sm">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-medium flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#8ab4f8]">memory</span> Mémoire de votre IA
-        </h3>
-        <button id="close-prefs-btn" class="text-[#9aa0a6] hover:text-white">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <p class="text-xs text-[#9aa0a6] mb-4">Voici ce qu'Aluetoo retient de vos interactions pour adapter son style à vos besoins. Vous pouvez vider ou affiner cette mémoire à tout moment.</p>
-      <textarea id="prefs-memory-box" class="w-full h-32 bg-[#131314] border border-[#303133] rounded-xl p-3 focus:outline-none focus:border-[#8ab4f8] text-xs" placeholder="Ex: Je suis développeur web. Je préfère des réponses courtes et du code en JavaScript..."></textarea>
-      <div class="flex justify-between items-center mt-4">
-        <button id="clear-prefs-btn" class="text-red-400 hover:underline text-xs">Tout effacer</button>
-        <button id="save-prefs-btn" class="bg-[#4285f4] hover:bg-[#357ae8] text-white text-xs px-4 py-2 rounded-lg font-medium transition">Sauvegarder</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const GROQ_API_KEY = "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";
     
+    // Définition des modèles et configurations demandées
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "⚡ Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "🚀 Super Fast" },
@@ -235,9 +185,8 @@
     let selectedModelKey = "fast-lite";
     let currentUser = null;
     let conversationHistory = [];
-    let currentAbortController = null; 
-    let isGenerating = false;
 
+    // Récupère ou initialise les compteurs du jour depuis le LocalStorage
     function getUsage() {
       const today = new Date().toDateString();
       let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
@@ -245,7 +194,7 @@
         data = { date: today, "fast-lite": 0, "super-fast": 0, "pro": 0 };
       } else {
         data = JSON.parse(data);
-        if (data.date !== today) {
+        if (data.date !== today) { // Reset si nouveau jour
           data = { date: today, "fast-lite": 0, "super-fast": 0, "pro": 0 };
         }
       }
@@ -260,7 +209,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupAuth();
       setupUI();
-      setupAdvancedFeatures();
     });
 
     // ─── Gestion Authentification ───
@@ -337,12 +285,6 @@
       document.getElementById("user-avatar").innerText = currentUser.firstname.substring(0,2).toUpperCase();
       document.getElementById("welcome-text").innerText = `Avez-vous de nouvelles idées ${currentUser.firstname} ?`;
       
-      // Charger la mémoire sauvegardée de l'utilisateur
-      const savedMemory = localStorage.getItem(`alu_memory_${currentUser.email}`);
-      if (savedMemory) {
-        document.getElementById("prefs-memory-box").value = savedMemory;
-      }
-
       updateLimitCountersDisplay();
       checkGlobalLimits();
     }
@@ -353,27 +295,29 @@
       const input = document.getElementById("chat-input");
       const composer = document.getElementById("composer-box");
 
+      // Vérifier si le modèle actuel choisi est épuisé
       if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
+        // Tenter de basculer automatiquement sur fast-lite s'il reste de la place
         if (selectedModelKey !== "fast-lite" && usage["fast-lite"] < modelsConfig["fast-lite"].limit) {
           switchModel("fast-lite");
           return;
         }
 
+        // Si aucun repli possible ou que le modèle sélectionné reste épuisé
         input.disabled = true;
         input.value = "";
         input.placeholder = "Limite de messages atteinte. Changez de modèle.";
         composer.style.opacity = "0.6";
         
+        // Si TOUS les modèles sont épuisés
         if (usage["fast-lite"] >= 20 && usage["super-fast"] >= 10 && usage["pro"] >= 5) {
           input.placeholder = "Limite de tous les modèles atteinte.";
           input.disabled = true;
         }
       } else {
-        if(!isGenerating) {
-          input.disabled = false;
-          input.placeholder = "Demandez à Aluetoo";
-          composer.style.opacity = "1";
-        }
+        input.disabled = false;
+        input.placeholder = "Demandez à Aluetoo";
+        composer.style.opacity = "1";
       }
     }
 
@@ -396,7 +340,7 @@
       checkGlobalLimits();
     }
 
-    // ─── Interface et Événements de base ───
+    // ─── Interface et Événements ───
     function setupUI() {
       const modelToggle = document.getElementById("model-menu-toggle");
       const modelDropdown = document.getElementById("model-dropdown");
@@ -412,37 +356,27 @@
         });
       });
 
-      // Dimensionnement automatique du textarea
+      // Contrôle bouton envoi actif
       input.addEventListener("input", () => {
-        input.style.height = "auto";
-        input.style.height = input.scrollHeight + "px";
-        
         if (input.value.trim().length > 0 && !input.disabled) {
-          setSendButtonState("active");
+          sendBtn.disabled = false;
+          sendBtn.style.background = "white";
+          sendBtn.style.color = "#0d0e0f";
         } else {
-          if(!isGenerating) setSendButtonState("disabled");
+          sendBtn.disabled = true;
+          sendBtn.style.background = "#333537";
+          sendBtn.style.color = "#7a7e84";
         }
       });
 
       input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          if (isGenerating) {
-            e.preventDefault();
-          } else if (!sendBtn.disabled && input.value.trim().length > 0) {
-            e.preventDefault();
-            handleSendMessage();
-          }
-        }
-      });
-
-      sendBtn.addEventListener("click", () => {
-        if (isGenerating) {
-          handleStopGeneration();
-        } else {
+        if (e.key === "Enter" && !e.shiftKey && !sendBtn.disabled) {
+          e.preventDefault();
           handleSendMessage();
         }
       });
 
+      sendBtn.addEventListener("click", handleSendMessage);
       document.getElementById("new-chat-btn").addEventListener("click", () => {
         document.getElementById("chat-messages").innerHTML = "";
         conversationHistory = [];
@@ -454,10 +388,12 @@
         window.location.reload();
       });
 
+      // Fermeture automatique des menus contextuels au clic ailleurs
       window.addEventListener("click", (e) => {
         if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
       });
 
+      // Sidebar Mobile Responsive Toggle
       const mobileSidebarBtn = document.getElementById("mobile-sidebar-toggle");
       const sidebar = document.querySelector(".alu-sidebar");
       const backdrop = document.getElementById("sidebar-backdrop");
@@ -468,86 +404,40 @@
           backdrop.classList.toggle("hidden");
         });
       }
-      backdrop.addEventListener("click", () => {
-        sidebar.classList.remove("open");
-        backdrop.classList.add("hidden");
-      });
     }
 
-    // Basculer l'état visuel du bouton d'envoi / arrêt d'urgence
-    function setSendButtonState(state) {
-      const sendBtn = document.getElementById("send-btn");
-      const sendIcon = document.getElementById("send-icon");
-      
-      if (state === "active") {
-        sendBtn.disabled = false;
-        sendBtn.style.background = "white";
-        sendBtn.style.color = "#0d0e0f";
-        sendIcon.innerText = "arrow_forward";
-      } else if (state === "generating") {
-        sendBtn.disabled = false;
-        sendBtn.style.background = "#ea4335";
-        sendBtn.style.color = "white";
-        sendIcon.innerText = "stop"; 
-      } else {
-        sendBtn.disabled = true;
-        sendBtn.style.background = "#333537";
-        sendBtn.style.color = "#7a7e84";
-        sendIcon.innerText = "arrow_forward";
-      }
-    }
-
-    // ─── Envoi et Gestion Streaming Réel API Groq ───
-    async function handleSendMessage(customText = null) {
+    // ─── Envoi et Gestion API Groq ───
+    async function handleSendMessage() {
       const input = document.getElementById("chat-input");
-      const text = customText ? customText.trim() : input.value.trim();
+      const text = input.value.trim();
       if (!text) return;
 
+      // Double vérification des limites avant traitement
       const usage = getUsage();
       if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
         checkGlobalLimits();
         return;
       }
 
+      // Incrémentation immédiate du compteur du modèle utilisé
       usage[selectedModelKey] += 1;
       saveUsage(usage);
 
       input.value = "";
-      input.style.height = "auto";
-      isGenerating = true;
-      setSendButtonState("generating");
+      document.getElementById("send-btn").disabled = true;
+      document.getElementById("send-btn").style.background = "#333537";
+      document.getElementById("send-btn").style.color = "#7a7e84";
       document.getElementById("welcome-screen").classList.add("hidden");
 
+      // Injection du message utilisateur dans l'interface
       appendMessageUI("user", text);
       conversationHistory.push({ role: "user", content: text });
       updateSidebarHistory(text);
 
-      // Création de l'élément de chargement / pulsation de pensée
-      const aiBubble = appendMessageUI("assistant", "");
-      const contentEl = aiBubble.querySelector(".alu-msg-content");
-      
-      // Section pliante d'affichage du raisonnement ("Deep Think")
-      const deepThinkSection = document.createElement("details");
-      deepThinkSection.className = "mb-3 text-xs bg-[#1e1f20] border border-[#303133] rounded-xl p-3 text-[#9aa0a6]";
-      deepThinkSection.innerHTML = `
-        <summary class="font-medium cursor-pointer select-none focus:outline-none">🧠 Chemin de pensée et d'analyse (Deep Think)</summary>
-        <div class="mt-2 text-[11px] leading-relaxed italic border-l border-[#4285f4] pl-2 py-1 msg-thought-process">
-          Analyse du prompt, recherche de contexte et structuration de la réponse en cours...
-        </div>
-      `;
-      contentEl.parentNode.insertBefore(deepThinkSection, contentEl);
-
-      const streamTextContainer = document.createElement("div");
-      streamTextContainer.className = "streaming-text-node leading-relaxed";
-      streamTextContainer.innerHTML = `<span class="inline-block w-2 h-4 bg-white animate-pulse ml-1"></span>`;
-      contentEl.appendChild(streamTextContainer;
-
+      // Préparation de la bulle d'attente de l'assistant
+      const aiBubble = appendMessageUI("assistant", "...");
       const container = document.getElementById("conversation-container");
       container.scrollTop = container.scrollHeight;
-
-      currentAbortController = new AbortController();
-      const userMemory = localStorage.getItem(`alu_memory_${currentUser.email}`) || "";
-      const systemInstructions = `Tu es Aluetoo AI, un assistant hautement intelligent. Reste concis, précis et lisible en Markdown. Sers-toi de ces informations préférentielles sur l'utilisateur si pertinent : ${userMemory}`;
 
       try {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -556,106 +446,52 @@
             "Content-Type": "application/json",
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
-          signal: currentAbortController.signal,
           body: JSON.stringify({
             model: modelsConfig[selectedModelKey].apiName,
             messages: [
-              { role: "system", content: systemInstructions },
+              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent à l'interface épurée." },
               ...conversationHistory
             ],
-            temperature: 0.7,
-            stream: true // Activation native du flux progressif
+            temperature: 0.7
           })
         });
 
-        if (!response.ok) throw new Error("Erreur serveur réseau.");
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let fullReplyText = "";
+        const data = await response.json();
         
-        // Finalisation simulation de pensée
-        aiBubble.querySelector(".msg-thought-process").innerText = "Modèle sélectionné avec succès. Restitution du résultat structuré en Markdown.";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
-          
-          for (const line of lines) {
-            if (line.startsWith("data: ") && line !== "data: [DONE]") {
-              try {
-                const parsed = JSON.parse(line.substring(6));
-                const content = parsed.choices[0].delta.content || "";
-                fullReplyText += content;
-                
-                // Formater le texte dynamiquement au fil de l'eau
-                streamTextContainer.innerHTML = formatMarkdown(fullReplyText) + `<span class="inline-block w-1.5 h-3.5 bg-[#8ab4f8] ml-0.5"></span>`;
-                container.scrollTop = container.scrollHeight;
-              } catch(e) {}
-            }
-          }
+        if (data.error && data.error.message.includes("model")) {
+          // Gestion des cas spécifiques d'erreurs de serveurs distants (ex: gpt-oss-120b simulé)
+          aiBubble.querySelector(".alu-msg-content").innerText = `Le modèle distant "${modelsConfig[selectedModelKey].apiName}" n'a pas pu être joint par la passerelle Groq.`;
+        } else {
+          const reply = data.choices[0].message.content;
+          aiBubble.querySelector(".alu-msg-content").innerText = reply;
+          conversationHistory.push({ role: "assistant", content: reply });
         }
-
-        // Nettoyage curseur de fin de stream
-        const finalCursor = streamTextContainer.querySelector("span");
-        if(finalCursor) finalCursor.remove();
-        
-        conversationHistory.push({ role: "assistant", content: fullReplyText });
 
       } catch (err) {
-        if (err.name === "AbortError") {
-          streamTextContainer.innerHTML = formatMarkdown(fullReplyText) + ` <p class="text-xs text-amber-500 italic mt-2">[Génération interrompue par l'utilisateur]</p>`;
-          conversationHistory.push({ role: "assistant", content: fullReplyText + " [Génération interrompue]" });
-        } else {
-          streamTextContainer.innerHTML = `<span class="text-red-400">Erreur réseau ou clé API non joignable. Impossible d'obtenir une réponse stable.</span>`;
-        }
+        console.error(err);
+        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau. Impossible de contacter le serveur Aluetoo.";
       }
 
-      isGenerating = false;
-      currentAbortController = null;
-      setSendButtonState("disabled");
       container.scrollTop = container.scrollHeight;
-      checkGlobalLimits();
+      checkGlobalLimits(); // Ré-évaluation de la saisie après envoi
     }
 
-    function handleStopGeneration() {
-      if (currentAbortController) {
-        currentAbortController.abort();
-      }
-    }
-
-    // ─── Injection des éléments graphiques enrichis (Actions, Markdown) ───
     function appendMessageUI(sender, text) {
       const holder = document.getElementById("chat-messages");
       const wrapper = document.createElement("div");
-      wrapper.className = `alu-msg alu-msg-${sender} group relative`;
+      wrapper.className = `alu-msg alu-msg-${sender}`;
 
       if (sender === "assistant") {
         wrapper.innerHTML = `
           <div class="alu-msg-avatar" style="background: var(--gradient); border:none; color:white; font-size:12px; font-weight:bold;">✦</div>
-          <div class="alu-msg-body w-full">
-            <div class="alu-msg-content">${formatMarkdown(text)}</div>
-            <div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#9aa0a6]">
-              <button class="msg-action-btn hover:text-white p-1" title="Copier la réponse" onclick="copyMessageText(this)"><span class="material-symbols-outlined text-sm">content_copy</span></button>
-              <button class="msg-action-btn hover:text-green-400 p-1" title="Utile" onclick="rateMessage(this, true)"><span class="material-symbols-outlined text-sm">thumb_up</span></button>
-              <button class="msg-action-btn hover:text-red-400 p-1" title="Inutile" onclick="rateMessage(this, false)"><span class="material-symbols-outlined text-sm">thumb_down</span></button>
-              <button class="msg-action-btn hover:text-white p-1" title="Lire à voix haute" onclick="speakMessageText(this)"><span class="material-symbols-outlined text-sm">volume_up</span></button>
-              <button class="msg-action-btn hover:text-[#8ab4f8] p-1 ml-2 text-xs flex items-center gap-1" title="Régénérer" onclick="regenerateLastResponse()"><span class="material-symbols-outlined text-xs">refresh</span>Régénérer</button>
-            </div>
+          <div class="alu-msg-body">
+            <div class="alu-msg-content"><p>${text}</p></div>
           </div>
         `;
       } else {
         wrapper.innerHTML = `
-          <div class="alu-msg-body w-full text-right flex flex-col items-end">
-            <div class="alu-msg-content text-left">${formatMarkdown(text)}</div>
-            <div class="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-              <button class="text-xs text-[#9aa0a6] hover:text-[#8ab4f8] flex items-center gap-1" onclick="editUserPrompt(this)">
-                <span class="material-symbols-outlined text-xs">edit</span> Modifier le prompt
-              </button>
-            </div>
+          <div class="alu-msg-body">
+            <div class="alu-msg-content"><p>${text}</p></div>
           </div>
         `;
       }
@@ -663,7 +499,6 @@
       return wrapper;
     }
 
-    // Gestion de l'historique de la barre latérale enrichi (Pin, Supprimer, Renommer)
     function updateSidebarHistory(msg) {
       const list = document.getElementById("history-list");
       const empty = list.querySelector(".alu-history-empty");
@@ -671,188 +506,15 @@
 
       if (list.children.length > 0 && conversationHistory.length > 2) return;
 
-      const title = msg.length > 22 ? msg.substring(0, 22) + "..." : msg;
+      const title = msg.length > 20 ? msg.substring(0, 20) + "..." : msg;
       const item = document.createElement("div");
-      item.className = "alu-history-item active group flex items-center justify-between w-full rounded-xl pr-2 transition-all duration-150";
+      item.className = "alu-history-item active";
       item.innerHTML = `
-        <button class="alu-history-title-btn text-left flex-1 min-w-0" onclick="alert('Reprise de discussion sauvegardée localement.')">
-          <span class="alu-history-title-text block truncate text-xs">💬 ${title}</span>
+        <button class="alu-history-title-btn">
+          <span class="alu-history-title-text">💬 ${title}</span>
         </button>
-        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button class="hover:text-amber-400 text-[#9aa0a6]" title="Épingler" onclick="event.stopPropagation(); this.classList.toggle('text-amber-400')"><span class="material-symbols-outlined text-xs">keep</span></button>
-          <button class="hover:text-red-400 text-[#9aa0a6]" title="Supprimer" onclick="event.stopPropagation(); this.closest('.alu-history-item').remove()"><span class="material-symbols-outlined text-xs">delete</span></button>
-        </div>
       `;
       list.insertBefore(item, list.firstChild);
-    }
-
-    // ─── Fonctionnalités Avancées Complémentaires ───
-    function setupAdvancedFeatures() {
-      // 1. Suggestions de prompts de l'écran d'accueil
-      document.querySelectorAll(".suggestion-card").forEach(card => {
-        card.addEventListener("click", () => {
-          const prompt = card.getAttribute("data-prompt");
-          handleSendMessage(prompt);
-        });
-      });
-
-      // 2. Recherche interne dans l'historique
-      const searchInput = document.getElementById("history-search");
-      searchInput.addEventListener("input", () => {
-        const query = searchInput.value.toLowerCase().trim();
-        document.querySelectorAll(".alu-history-item").forEach(item => {
-          const text = item.querySelector(".alu-history-title-text").innerText.toLowerCase();
-          item.style.display = text.includes(query) ? "flex" : "none";
-        });
-      });
-
-      // 3. Saisie Vocale Native (Speech Recognition)
-      const voiceBtn = document.getElementById("voice-btn");
-      const micIcon = document.getElementById("mic-icon");
-      const chatInput = document.getElementById("chat-input");
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.lang = "fr-FR";
-        recognition.interimResults = false;
-
-        voiceBtn.addEventListener("click", () => {
-          if (voiceBtn.classList.contains("recording")) {
-            recognition.stop();
-          } else {
-            recognition.start();
-          }
-        });
-
-        recognition.onstart = () => {
-          voiceBtn.classList.add("recording");
-          micIcon.innerText = "graphic_eq";
-          micIcon.style.color = "#ea4335";
-        };
-
-        recognition.onresult = (event) => {
-          const speechToText = event.results[0][0].transcript;
-          chatInput.value = (chatInput.value + " " + speechToText).trim();
-          chatInput.dispatchEvent(new Event("input"));
-        };
-
-        recognition.onend = () => {
-          voiceBtn.classList.remove("recording");
-          micIcon.innerText = "mic";
-          micIcon.style.color = "";
-        };
-      } else {
-        voiceBtn.style.display = "none";
-      }
-
-      // 4. Gestionnaire de Fenêtre Modal pour la Mémoire/Préférences
-      const prefsModal = document.getElementById("preferences-modal");
-      document.getElementById("preferences-toggle-btn").addEventListener("click", () => prefsModal.classList.remove("hidden"));
-      document.getElementById("close-prefs-btn").addEventListener("click", () => prefsModal.classList.add("hidden"));
-      document.getElementById("clear-prefs-btn").addEventListener("click", () => {
-        document.getElementById("prefs-memory-box").value = "";
-        localStorage.removeItem(`alu_memory_${currentUser.email}`);
-        alert("Mémoire de l'IA effacée.");
-      });
-      document.getElementById("save-prefs-btn").addEventListener("click", () => {
-        const memoryContent = document.getElementById("prefs-memory-box").value.trim();
-        localStorage.setItem(`alu_memory_${currentUser.email}`, memoryContent);
-        prefsModal.classList.add("hidden");
-        alert("Préférences enregistrées avec succès.");
-      });
-
-      // 5. Gestion du sélecteur Thème Clair / Thème Sombre
-      document.getElementById("theme-toggle-btn").addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-      });
-
-      // 6. Raccourcis Clavier Avancés (Ctrl + K focus recherche)
-      window.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-          e.preventDefault();
-          searchInput.focus();
-        }
-      });
-    }
-
-    // Actions utilitaires des bulles IA
-    function copyMessageText(btn) {
-      const text = btn.closest(".alu-msg-body").querySelector(".streaming-text-node, p").innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        const icon = btn.querySelector(".material-symbols-outlined");
-        icon.innerText = "done";
-        setTimeout(() => icon.innerText = "content_copy", 1500);
-      });
-    }
-
-    function rateMessage(btn, isPositive) {
-      btn.style.color = isPositive ? "#34a853" : "#ea4335";
-      btn.parentNode.querySelectorAll(".msg-action-btn").forEach(b => { if(b !== btn) b.style.opacity = "0.5"; });
-    }
-
-    function speakMessageText(btn) {
-      const text = btn.closest(".alu-msg-body").querySelector(".streaming-text-node, p").innerText;
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "fr-FR";
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-
-    function regenerateLastResponse() {
-      if (isGenerating || conversationHistory.length < 2) return;
-      // Supprimer le dernier échange assistant
-      if (conversationHistory[conversationHistory.length - 1].role === "assistant") {
-        conversationHistory.pop();
-      }
-      const lastUserMsg = conversationHistory.pop();
-      const messagesContainer = document.getElementById("chat-messages");
-      // Retirer les deux dernières bulles du dom
-      if(messagesContainer.children.length >= 2) {
-        messagesContainer.removeChild(messagesContainer.lastChild);
-        messagesContainer.removeChild(messagesContainer.lastChild);
-      }
-      handleSendMessage(lastUserMsg.content);
-    }
-
-    function editUserPrompt(btn) {
-      const contentDiv = btn.closest(".alu-msg-body").querySelector(".alu-msg-content");
-      const oldText = contentDiv.innerText;
-      const input = document.getElementById("chat-input");
-      input.value = oldText;
-      input.focus();
-      input.dispatchEvent(new Event("input"));
-    }
-
-    // Mini Parseur Markdown Basique pour Blocs de Code & Listes
-    function formatMarkdown(src) {
-      if (!src) return "";
-      let txt = src
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-
-      // Blocs de Code triple backticks (avec bouton copier intégré)
-      const codeBlockRegex = /```([\s\S]*?)```/g;
-      txt = txt.replace(codeBlockRegex, (match, code) => {
-        return `
-          <div class="my-3 border border-[#303133] rounded-xl overflow-hidden font-mono text-xs text-left bg-[#131314] w-full">
-            <div class="bg-[#1e1f20] px-4 py-1.5 flex justify-between items-center border-b border-[#303133] text-[#9aa0a6] text-[11px]">
-              <span>CODE INTERNE / ARTEFACT</span>
-              <button class="text-[#8ab4f8] hover:underline" onclick="navigator.clipboard.writeText(this.parentNode.nextElementSibling.innerText); this.innerText='Copié !'; setTimeout(()=>this.innerText='Copier', 1500)">Copier</button>
-            </div>
-            <pre class="p-4 overflow-x-auto text-[#a8ff60] font-mono leading-relaxed"><code>${code.trim()}</code></pre>
-          </div>
-        `;
-      });
-
-      // Formatage du Gras et Listes à puces
-      txt = txt.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      txt = txt.replace(/^\* (.*?)$/gm, '<li class="ml-4 list-disc my-1">$1</li>');
-      
-      return txt.split("\n\n").map(p => p.trim().startsWith("<div") || p.trim().startsWith("<li") ? p : `<p class="mb-2 leading-relaxed">${p}</p>`).join("");
     }
   </script>
 </body>
