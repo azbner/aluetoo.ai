@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aluetoo AI</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: true, // Laisse Tailwind nettoyer les marges par défaut
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#131314] text-[#e3e3e3]">
+
+  <div class="alu-app">
+    
+    <aside class="alu-sidebar">
+      <div class="alu-sidebar-top">
+        <button class="alu-menu-btn">☰</button>
+        <div class="alu-brand">
+          <div class="alu-brand-icon" style="color: #9b72cb;">✦</div>
+          <span class="alu-brand-name">Aluetoo</span>
+        </div>
+      </div>
+
+      <button class="alu-new-chat">
+        <span>+</span> Nouvelle conversation
+      </button>
+
+      <div class="alu-nav-items">
+        <button class="alu-nav-item">🔍 Recherche de discussions</button>
+        <button class="alu-nav-item">📚 Bibliothèque</button>
+      </div>
+
+      <div class="alu-history-section">
+        <p class="alu-section-label">Le dernier</p>
+        <div class="alu-history-list">
+          <div class="alu-history-empty">Aucune conversation</div>
+        </div>
+      </div>
+
+      <div class="alu-activity">
+        <button class="alu-nav-item">🕒 Activité</button>
+      </div>
+
+      <div class="alu-user-block">
+        <div class="alu-user-row">
+          <div class="alu-avatar">LC</div>
+          <div class="alu-user-info">
+            <p class="alu-user-name">Léo Ciach</p>
+          </div>
+          <button class="alu-settings-btn">⚙️</button>
+        </div>
+        <div class="alu-loc-block">
+          <div class="alu-loc-icon">📍</div>
+          <div>
+            <p class="alu-loc-name">Jette, Belgique</p>
+            <p class="alu-loc-desc">En fonction de votre lieu de résidence</p>
+            <button class="alu-loc-update">Mettre à jour l'emplacement</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="alu-main">
+      
+      <div class="alu-topbar">
+        <div class="alu-topbar-left">
+          <button class="alu-topbar-brand">
+            <span class="alu-topbar-title">Aluetoo ▾</span>
+          </button>
+        </div>
+        <div class="alu-topbar-right">
+          <button class="alu-upgrade-btn">
+            <span>✦</span> Passez à une formule supérieure
+          </button>
+        </div>
+      </div>
+
+      <div class="alu-conversation">
+        <div class="alu-welcome">
+          <h1 class="alu-welcome-title">Avez-vous de nouvelles idées ?</h1>
+        </div>
+        
+        <div class="alu-messages" id="chat-messages"></div>
+      </div>
+
+      <div class="alu-composer-wrap">
+        <div class="alu-composer">
+          <textarea class="alu-textarea" placeholder="Demandez à Aluetoo" rows="1"></textarea>
+          
+          <div class="alu-composer-bar">
+            <div class="alu-composer-tools-left">
+              <button class="alu-tool-btn alu-attach-btn">+</button>
+            </div>
+            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 8px;">
+              <span class="alu-model-pill">⚡ Flash</span>
+              <button class="alu-send-btn">➔</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>
