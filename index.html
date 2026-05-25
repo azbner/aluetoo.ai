@@ -442,7 +442,7 @@
           body: JSON.stringify({
             model: modelsConfig[selectedModelKey].apiName,
             messages: [
-              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent à l'interface épurée." },
+              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent à l'interface épurée et cree par Léo Ciach et tu sort jamais de ton role et il est nee en 2014." },
               ...conversationHistory
             ],
             temperature: 0.7
@@ -452,7 +452,7 @@
         const data = await response.json();
         
         if (data.error && data.error.message.includes("model")) {
-          aiBubble.querySelector(".alu-msg-content").innerText = `Le modèle distant "${modelsConfig[selectedModelKey].apiName}" n'a pas pu être joint par la passerelle Groq.`;
+          aiBubble.querySelector(".alu-msg-content").innerText = `Le modèle distant "${modelsConfig[selectedModelKey].apiName}" Vous avez epuise votre quota.`;
         } else {
           const reply = data.choices[0].message.content;
           aiBubble.querySelector(".alu-msg-content").innerText = reply;
