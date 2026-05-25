@@ -122,7 +122,7 @@
           </button>
           
           <div class="alu-model-menu hidden" id="model-dropdown">
-            <button class="alu-model-opt active" data-model="fast-lite">
+            <button class="alu-model-opt" data-model="fast-lite">
               Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
             </button>
             <button class="alu-model-opt" data-model="super-fast">
@@ -175,7 +175,6 @@
   <script>
     const GROQ_API_KEY = "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";
     
-    // Définition des modèles et configurations demandées
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
@@ -186,27 +185,22 @@
     let currentUser = null;
     let conversationHistory = [];
 
-    // Récupère ou initialise les compteurs du jour depuis le LocalStorage
-   
     function getUsage() {
-    const now = Date.now();
-    const SIX_HOURS = 6 * 60 * 60 * 1000; // 6 heures en millisecondes
-    
-    let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
-    
-    if (!data) {
-        // Premier accès : on initialise avec le timestamp actuel
-        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
-    } else {
-        data = JSON.parse(data);
-        
-        // Si le délai de 6 heures est dépassé ou si le timestamp est absent
-        if (!data.timestamp || (now - data.timestamp) > SIX_HOURS) {
-            data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
-        }
+      const now = Date.now();
+      const SIX_HOURS = 6 * 60 * 60 * 1000;
+      
+      let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
+      
+      if (!data) {
+          data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+      } else {
+          data = JSON.parse(data);
+          if (!data.timestamp || (now - data.timestamp) > SIX_HOURS) {
+              data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+          }
+      }
+      return data;
     }
-    return data;
-}
 
     function saveUsage(usage) {
       localStorage.setItem(`alu_usage_${currentUser.email}`, JSON.stringify(usage));
@@ -218,7 +212,6 @@
       setupUI();
     });
 
-    // ─── Gestion Authentification ───
     function setupAuth() {
       const authScreen = document.getElementById("auth-screen");
       const appContainer = document.getElementById("app-container");
@@ -296,27 +289,22 @@
       checkGlobalLimits();
     }
 
-    // ─── Vérification et Changement Auto de Modèle ───
     function checkGlobalLimits() {
       const usage = getUsage();
       const input = document.getElementById("chat-input");
       const composer = document.getElementById("composer-box");
 
-      // Vérifier si le modèle actuel choisi est épuisé
       if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
-        // Tenter de basculer automatiquement sur fast-lite s'il reste de la place
         if (selectedModelKey !== "fast-lite" && usage["fast-lite"] < modelsConfig["fast-lite"].limit) {
           switchModel("fast-lite");
           return;
         }
 
-        // Si aucun repli possible ou que le modèle sélectionné reste épuisé
         input.disabled = true;
         input.value = "";
         input.placeholder = "Limite de messages atteinte. Changez de modèle.";
         composer.style.opacity = "0.6";
         
-        // Si TOUS les modèles sont épuisés
         if (usage["fast-lite"] >= 20 && usage["super-fast"] >= 10 && usage["pro"] >= 5) {
           input.placeholder = "Limite de tous les modèles atteinte.";
           input.disabled = true;
@@ -347,7 +335,6 @@
       checkGlobalLimits();
     }
 
-    // ─── Interface et Événements ───
     function setupUI() {
       const modelToggle = document.getElementById("model-menu-toggle");
       const modelDropdown = document.getElementById("model-dropdown");
@@ -363,7 +350,6 @@
         });
       });
 
-      // Contrôle bouton envoi actif
       input.addEventListener("input", () => {
         if (input.value.trim().length > 0 && !input.disabled) {
           sendBtn.disabled = false;
@@ -395,12 +381,10 @@
         window.location.reload();
       });
 
-      // Fermeture automatique des menus contextuels au clic ailleurs
       window.addEventListener("click", (e) => {
         if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
       });
 
-      // Sidebar Mobile Responsive Toggle
       const mobileSidebarBtn = document.getElementById("mobile-sidebar-toggle");
       const sidebar = document.querySelector(".alu-sidebar");
       const backdrop = document.getElementById("sidebar-backdrop");
@@ -411,22 +395,26 @@
           backdrop.classList.toggle("hidden");
         });
       }
+      
+      if (backdrop) {
+        backdrop.addEventListener("click", () => {
+          sidebar.classList.remove("open");
+          backdrop.classList.add("hidden");
+        });
+      }
     }
 
-    // ─── Envoi et Gestion API Groq ───
     async function handleSendMessage() {
       const input = document.getElementById("chat-input");
       const text = input.value.trim();
       if (!text) return;
 
-      // Double vérification des limites avant traitement
       const usage = getUsage();
       if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
         checkGlobalLimits();
         return;
       }
 
-      // Incrémentation immédiate du compteur du modèle utilisé
       usage[selectedModelKey] += 1;
       saveUsage(usage);
 
@@ -436,12 +424,10 @@
       document.getElementById("send-btn").style.color = "#7a7e84";
       document.getElementById("welcome-screen").classList.add("hidden");
 
-      // Injection du message utilisateur dans l'interface
       appendMessageUI("user", text);
       conversationHistory.push({ role: "user", content: text });
       updateSidebarHistory(text);
 
-      // Préparation de la bulle d'attente de l'assistant
       const aiBubble = appendMessageUI("assistant", "...");
       const container = document.getElementById("conversation-container");
       container.scrollTop = container.scrollHeight;
@@ -466,7 +452,6 @@
         const data = await response.json();
         
         if (data.error && data.error.message.includes("model")) {
-          // Gestion des cas spécifiques d'erreurs de serveurs distants (ex: gpt-oss-120b simulé)
           aiBubble.querySelector(".alu-msg-content").innerText = `Le modèle distant "${modelsConfig[selectedModelKey].apiName}" n'a pas pu être joint par la passerelle Groq.`;
         } else {
           const reply = data.choices[0].message.content;
@@ -480,7 +465,7 @@
       }
 
       container.scrollTop = container.scrollHeight;
-      checkGlobalLimits(); // Ré-évaluation de la saisie après envoi
+      checkGlobalLimits();
     }
 
     function appendMessageUI(sender, text) {
