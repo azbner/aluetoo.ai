@@ -28,7 +28,7 @@
       <form id="auth-form" class="space-y-4">
         <div id="firstname-field" class="hidden">
           <label class="block text-xs text-[#9aa0a6] mb-1 font-medium">Prénom</label>
-          <input type="text" id="auth-firstname" class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]" placeholder="Léo">
+          <input type="text" id="auth-firstname" class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]" placeholder="ici">
         </div>
         <div>
           <label class="block text-xs text-[#9aa0a6] mb-1 font-medium">Adresse e-mail</label>
@@ -94,7 +94,7 @@
         <div class="alu-user-row">
           <div class="alu-avatar" id="user-avatar" style="color: white; font-weight: bold; font-size: 0.85rem;">LC</div>
           <div class="alu-user-info">
-            <p class="alu-user-name" id="user-display-name">Léo Ciach</p>
+            <p class="alu-user-name" id="user-display-name">cree par Léo Ciach</p>
           </div>
           <button class="alu-settings-btn" id="logout-btn" title="Se déconnecter">
             <span class="material-symbols-outlined">logout</span>
@@ -103,7 +103,7 @@
         <div class="alu-loc-block">
           <span class="material-symbols-outlined" style="font-size: 16px; margin-top: 2px;">location_on</span>
           <div>
-            <p class="alu-loc-name">Jette, Belgique</p>
+            <p class="alu-loc-name">Belgique</p>
             <p class="alu-loc-desc">En fonction de votre lieu de résidence</p>
             <button class="alu-loc-update">Mettre à jour l'emplacement</button>
           </div>
@@ -123,13 +123,13 @@
           
           <div class="alu-model-menu hidden" id="model-dropdown">
             <button class="alu-model-opt active" data-model="fast-lite">
-              ⚡ Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
+              Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
             </button>
             <button class="alu-model-opt" data-model="super-fast">
-              🚀 Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
+              Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
             </button>
             <button class="alu-model-opt" data-model="pro">
-              💎 Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
+              Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
             </button>
           </div>
         </div>
@@ -161,7 +161,7 @@
               </button>
             </div>
             <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
-              <span class="alu-model-pill" id="input-model-indicator">⚡ Fast Lite</span>
+              <span class="alu-model-pill" id="input-model-indicator">Fast Lite</span>
               <button class="alu-send-btn" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
                 <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
               </button>
@@ -177,9 +177,9 @@
     
     // Définition des modèles et configurations demandées
     const modelsConfig = {
-      "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "⚡ Fast Lite" },
-      "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "🚀 Super Fast" },
-      "pro": { name: "Aluetoo Pro", apiName: "openai/gpt-oss-120b", limit: 5, pill: "💎 Aluetoo Pro" }
+      "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
+      "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
+      "pro": { name: "Aluetoo Pro", apiName: "openai/gpt-oss-120b", limit: 5, pill: "Aluetoo Pro" }
     };
 
     let selectedModelKey = "fast-lite";
@@ -187,19 +187,26 @@
     let conversationHistory = [];
 
     // Récupère ou initialise les compteurs du jour depuis le LocalStorage
+   
     function getUsage() {
-      const today = new Date().toDateString();
-      let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
-      if (!data) {
-        data = { date: today, "fast-lite": 0, "super-fast": 0, "pro": 0 };
-      } else {
+    const now = Date.now();
+    const SIX_HOURS = 6 * 60 * 60 * 1000; // 6 heures en millisecondes
+    
+    let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
+    
+    if (!data) {
+        // Premier accès : on initialise avec le timestamp actuel
+        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+    } else {
         data = JSON.parse(data);
-        if (data.date !== today) { // Reset si nouveau jour
-          data = { date: today, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+        
+        // Si le délai de 6 heures est dépassé ou si le timestamp est absent
+        if (!data.timestamp || (now - data.timestamp) > SIX_HOURS) {
+            data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
         }
-      }
-      return data;
     }
+    return data;
+}
 
     function saveUsage(usage) {
       localStorage.setItem(`alu_usage_${currentUser.email}`, JSON.stringify(usage));
