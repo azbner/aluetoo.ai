@@ -132,9 +132,6 @@
       border-radius: 2px;
     }
 
-    /* ==============================================================
-       CORRECTION RESPONSIVE COMPLÈTE ET COMPATIBILITÉ SMARTPHONE
-       ============================================================== */
     @media screen and (max-width: 768px) {
       .alu-sidebar {
         position: fixed !important;
@@ -145,7 +142,7 @@
         z-index: 50 !important;
         transition: left 0.3s ease !important;
         background-color: #1e1f20 !important;
-        display: flex !important; /* On s'assure qu'elle garde sa structure interne */
+        display: flex !important;
       }
       .alu-sidebar.active {
         left: 0 !important;
@@ -282,14 +279,12 @@
       </div>
     </aside>
 
-    <!-- Fond pour fermer le menu mobile -->
     <div class="fixed inset-0 bg-black/50 z-40 hidden" id="sidebar-backdrop"></div>
 
     <main class="alu-main">
       
       <div class="alu-topbar">
         <div class="alu-topbar-left flex items-center gap-2">
-          <!-- Bouton Menu pour mobile -->
           <button class="p-2 text-gray-400 hover:text-white block md:hidden focus:outline-none" id="mobile-sidebar-toggle">
             <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
           </button>
@@ -312,7 +307,7 @@
       <div class="alu-composer-wrap">
         <div class="alu-composer" id="composer-box" style="position: relative;">
           <div id="attached-file-preview" class="hidden flex items-center gap-2 mb-2 p-1.5 bg-[#131314] border border-[#303133] rounded-xl max-w-max text-xs">
-            <span class="material-symbols-outlined text-sm text-blue-400">description</span>
+            <span class="material-symbols-outlined text-sm text-blue-400" id="file-icon-preview">description</span>
             <span id="attached-file-name" class="text-gray-300 max-w-[150px] truncate">fichier.txt</span>
             <button class="text-gray-500 hover:text-red-400 ml-1" id="remove-file-btn"><span class="material-symbols-outlined text-xs">close</span></button>
           </div>
@@ -344,6 +339,9 @@
                 </button>
                 <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="pro">
                   Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
+                </button>
+                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="llama4-scout">
+                  Llama 4 Scout <span class="text-xs text-gray-500 ml-auto" id="count-llama4">(Beta)</span>
                 </button>
               </div>
 
@@ -382,13 +380,15 @@
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
-      "pro": { name: "Aluetoo Pro", apiName: "llama-3.3-70b-versatile", limit: 5, pill: "Aluetoo Pro" }
+      "pro": { name: "Aluetoo Pro Vision", apiName: "llama-3.2-11b-vision-preview", limit: 5, pill: "Aluetoo Pro" },
+      "llama4-scout": { name: "Llama 4 Scout", apiName: "meta-llama/llama-4-scout-17b-16e-instruct", limit: 5, pill: "Llama 4 Scout" }
     };
 
     let selectedModelKey = "fast-lite";
     let currentUser = null;
     let conversationHistory = [];
     let currentAttachedFile = null;
+    let currentAttachedFileBase64 = null; 
     let currentActiveChatId = null;
 
     function getUsage() {
@@ -396,11 +396,11 @@
       const SIX_HOURS = 6 * 60 * 60 * 1000;
       let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
       if (!data) {
-        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0, "llama4-scout": 0 };
       } else {
         data = JSON.parse(data);
         if (!data.timestamp || (now - data.timestamp) > SIX_HOURS) {
-          data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
+          data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0, "llama4-scout": 0 };
         }
       }
       return data;
@@ -496,7 +496,7 @@
       const input = document.getElementById("chat-input");
       const composer = document.getElementById("composer-box");
 
-      if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
+      if (usage[selectedModelKey] >= (modelsConfig[selectedModelKey].limit || 999)) {
         if (selectedModelKey !== "fast-lite" && usage["fast-lite"] < modelsConfig["fast-lite"].limit) {
           switchModel("fast-lite");
           return;
@@ -550,7 +550,6 @@
         });
       });
 
-      // --- LOGIQUE MOBILE FIXÉE POUR LA SIDEBAR ---
       const sidebar = document.getElementById("alu-sidebar");
       const sidebarToggle = document.getElementById("mobile-sidebar-toggle");
       const backdrop = document.getElementById("sidebar-backdrop");
@@ -621,20 +620,41 @@
       const realFileInput = document.getElementById("real-file-input");
       const filePreview = document.getElementById("attached-file-preview");
       const fileNameSpan = document.getElementById("attached-file-name");
+      const fileIconPreview = document.getElementById("file-icon-preview");
 
-      document.getElementById("attach-btn").addEventListener("click", () => realFileInput.click());
-      document.getElementById("image-btn").addEventListener("click", () => { realFileInput.accept = "image/*"; realFileInput.click(); });
+      document.getElementById("attach-btn").addEventListener("click", () => {
+        realFileInput.removeAttribute("accept");
+        realFileInput.click();
+      });
+      
+      document.getElementById("image-btn").addEventListener("click", () => { 
+        realFileInput.accept = "image/*"; 
+        realFileInput.click(); 
+      });
 
       realFileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) {
           currentAttachedFile = e.target.files[0];
           fileNameSpan.innerText = currentAttachedFile.name;
           filePreview.classList.remove("hidden");
+
+          if (currentAttachedFile.type.startsWith("image/")) {
+            fileIconPreview.innerText = "image";
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              currentAttachedFileBase64 = evt.target.result;
+            };
+            reader.readAsDataURL(currentAttachedFile);
+          } else {
+            fileIconPreview.innerText = "description";
+            currentAttachedFileBase64 = null;
+          }
         }
       });
 
       document.getElementById("remove-file-btn").addEventListener("click", () => {
         currentAttachedFile = null;
+        currentAttachedFileBase64 = null;
         filePreview.classList.add("hidden");
         realFileInput.value = "";
       });
@@ -677,31 +697,49 @@
       });
     }
 
-    // --- LOGIQUE LIVE STREAMING SANS SIMULATION EN DIRECT ---
     async function handleSendMessage() {
       const input = document.getElementById("chat-input");
       let text = input.value.trim();
       if (!text && !currentAttachedFile) return;
 
       const usage = getUsage();
-      if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) { checkGlobalLimits(); return; }
+      if (usage[selectedModelKey] >= (modelsConfig[selectedModelKey].limit || 999)) { checkGlobalLimits(); return; }
 
       usage[selectedModelKey] += 1;
       saveUsage(usage);
 
-      if (currentAttachedFile) {
-        text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
-        currentAttachedFile = null;
-        document.getElementById("attached-file-preview").classList.add("hidden");
+      let messagePayloadContent = [];
+
+      if (currentAttachedFileBase64 && (selectedModelKey === "pro" || selectedModelKey === "llama4-scout")) {
+        messagePayloadContent.push({
+          type: "text",
+          text: text || "Analyse cette image."
+        });
+        messagePayloadContent.push({
+          type: "image_url",
+          image_url: {
+            url: currentAttachedFileBase64
+          }
+        });
+        appendMessageUI("user", `[Image jointe: ${currentAttachedFile.name}] \n` + text);
+      } else {
+        if (currentAttachedFile) {
+          text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
+        }
+        messagePayloadContent = text;
+        appendMessageUI("user", text);
       }
+
+      currentAttachedFile = null;
+      currentAttachedFileBase64 = null;
+      document.getElementById("attached-file-preview").classList.add("hidden");
 
       input.value = "";
       input.style.height = "auto";
       document.getElementById("send-btn").disabled = true;
       document.getElementById("welcome-screen").classList.add("hidden");
 
-      appendMessageUI("user", text);
-      conversationHistory.push({ role: "user", content: text });
+      conversationHistory.push({ role: "user", content: messagePayloadContent });
 
       const aiBubble = appendMessageUI("assistant", "");
       const contentDiv = aiBubble.querySelector(".alu-msg-content");
@@ -720,11 +758,11 @@
           body: JSON.stringify({
             model: modelsConfig[selectedModelKey].apiName,
             messages: [
-              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014. Ajoute parfois des sources pertinentes sous forme de texte ou de mentions." },
+              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014. Tu disposes de capacités multimodales permettant de lire et d'analyser les images reçues. Ajoute parfois des sources pertinentes sous forme de texte ou de mentions." },
               ...conversationHistory
             ],
             temperature: 0.7,
-            stream: true // Activation du vrai flux natif en direct
+            stream: true
           })
         });
 
@@ -754,24 +792,22 @@
         }
 
         conversationHistory.push({ role: "assistant", content: fullReply });
-        saveConversationToGlobal(text, fullReply);
+        saveConversationToGlobal(typeof messagePayloadContent === 'string' ? messagePayloadContent : text, fullReply);
 
       } catch (err) {
-        contentDiv.innerText = "Erreur de connexion en direct.";
+        contentDiv.innerText = "Erreur lors de la lecture ou de la communication en direct.";
       }
 
       container.scrollTop = container.scrollHeight;
       checkGlobalLimits();
     }
 
-    // --- RENDU DES SOURCES INJECTÉES STYLE GOOGLE SEARCH ---
     function formatAIResponse(text) {
       let html = text
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, "<br>");
 
-      // Injection automatique de la source stylisée si des mots clés comme YouTube ou Wikipédia apparaissent
       if (html.toLowerCase().includes("youtube") && !html.includes("alu-source-badge")) {
         html += ` <a href="https://www.youtube.com" target="_blank" class="alu-source-badge"><img src="https://www.youtube.com/s/desktop/282a325b/img/favicon_32x32.png" class="alu-source-icon">YouTube · Tech and Shoot +5</a>`;
       } else if (html.toLowerCase().includes("samsung") && !html.includes("alu-source-badge")) {
@@ -780,8 +816,6 @@
       return html;
     }
 
-    // Le reste de tes fonctions d'historique (inchangé pour ne toucher à rien d'autre)
-    // [...] (loadSavedConversations, appendMessageUI, saveConversationToGlobal, etc. s'exécutent normalement ci-dessous)
     function appendMessageUI(sender, text) {
       const holder = document.getElementById("chat-messages");
       const wrapper = document.createElement("div");
@@ -899,7 +933,14 @@
           conversationHistory = item.history || [{ role: "user", content: item.prompt }, { role: "assistant", content: item.reply }];
           
           conversationHistory.forEach(msg => {
-            appendMessageUI(msg.role, msg.role === 'assistant' ? formatAIResponse(msg.content) : msg.content);
+            let contentToRender = "";
+            if (Array.isArray(msg.content)) {
+              const textObj = msg.content.find(c => c.type === "text");
+              contentToRender = textObj ? textObj.text : "";
+            } else {
+              contentToRender = msg.content;
+            }
+            appendMessageUI(msg.role, msg.role === 'assistant' ? formatAIResponse(contentToRender) : contentToRender);
           });
           const containerWrap = document.getElementById("conversation-container");
           containerWrap.scrollTop = containerWrap.scrollHeight;
