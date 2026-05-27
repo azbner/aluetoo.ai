@@ -14,6 +14,7 @@
     }
   </script>
 
+  <!-- Ton fichier CSS d'origine -->
   <link rel="stylesheet" href="style.css">
 
   <style>
@@ -77,12 +78,56 @@
       color: #8ab4f8;
     }
 
+    /* --- NOUVEAU MENU DES MODELES EN BAS AVEC ANIMATION STYLÉE --- */
+    .alu-model-menu-bottom {
+      position: absolute;
+      bottom: 110%;
+      right: 0;
+      background-color: #1e1f20;
+      border: 1px solid #303133;
+      border-radius: 16px;
+      padding: 8px;
+      width: 240px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 40;
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      pointer-events: none;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .alu-model-menu-bottom.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .alu-model-pill-btn {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+    .alu-model-pill-btn:hover {
+      background-color: rgba(255,255,255,0.08);
+    }
+
     /* ==============================================================
-       CORRECTION RESPONSIVE COMPLÈTE POUR SMARTPHONES (MAX 768PX)
+       CORRECTION RESPONSIVE COMPLÈTE ET COMPATIBILITÉ SMARTPHONE
        ============================================================== */
     @media screen and (max-width: 768px) {
+      /* Force l'affichage de la sidebar mobile quand elle possède la classe active */
+      .alu-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 280px !important;
+        height: 100% !important;
+        z-index: 50 !important;
+        transition: left 0.3s ease !important;
+        background-color: #1e1f20 !important;
+      }
+      .alu-sidebar.active {
+        left: 0 !important;
+      }
       
-      /* Force le titre à s'adapter proprement sur les petits écrans sans casser */
       .alu-welcome-title, h1.alu-welcome-title {
         font-size: 1.6rem !important;
         line-height: 1.3 !important;
@@ -93,7 +138,6 @@
         word-wrap: break-word !important;
       }
 
-      /* Ajuste la barre du haut pour que rien ne sorte de l'écran tactile */
       .alu-topbar {
         padding: 8px !important;
         gap: 4px !important;
@@ -108,7 +152,6 @@
         white-space: nowrap !important;
       }
 
-      /* Espacement optimisé pour le bas de l'écran mobile */
       .alu-composer-wrap {
         padding: 0 8px 8px 8px !important;
       }
@@ -116,7 +159,6 @@
         padding: 8px !important;
       }
       
-      /* Affiche en permanence les boutons d'action d'historique sur mobile */
       .alu-history-actions {
         opacity: 1 !important;
       }
@@ -125,6 +167,7 @@
 </head>
 <body class="bg-[#131314] text-[#e3e3e3]">
 
+  <!-- ÉCRAN D'AUTHENTIFICATION -->
   <div id="auth-screen" class="fixed inset-0 bg-[#131314] z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1f20] border border-[#303133] p-8 rounded-2xl w-full max-w-md shadow-2xl">
       <div class="flex items-center gap-2 mb-6 justify-center">
@@ -158,13 +201,11 @@
     </div>
   </div>
 
+  <!-- APPLICATION PRINCIPALE -->
   <div class="alu-app hidden" id="app-container">
     
-    <aside class="alu-sidebar">
+    <aside class="alu-sidebar" id="alu-sidebar">
       <div class="alu-sidebar-top">
-        <button class="alu-menu-btn" id="mobile-sidebar-toggle">
-          <span class="material-symbols-outlined">menu</span>
-        </button>
         <div class="alu-brand">
           <div class="alu-brand-icon" style="background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem; font-weight: bold;">✦</div>
           <span class="alu-brand-name">Aluetoo</span>
@@ -218,27 +259,18 @@
       </div>
     </aside>
 
-    <div class="alu-backdrop hidden" id="sidebar-backdrop"></div>
+    <!-- Fond pour fermer le menu mobile en cliquant à côté -->
+    <div class="fixed inset-0 bg-black/50 z-40 hidden" id="sidebar-backdrop"></div>
 
     <main class="alu-main">
       
       <div class="alu-topbar">
-        <div class="alu-topbar-left">
-          <button class="alu-topbar-brand" id="model-menu-toggle">
-            <span class="alu-topbar-title" id="current-model-title">Aluetoo Fast Lite ▾</span>
+        <div class="alu-topbar-left flex items-center gap-2">
+          <!-- Bouton Menu visible uniquement sur mobile pour ouvrir l'historique -->
+          <button class="p-2 text-gray-400 hover:text-white md:hidden block focus:outline-none" id="mobile-sidebar-toggle">
+            <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
           </button>
-          
-          <div class="alu-model-menu hidden" id="model-dropdown">
-            <button class="alu-model-opt" data-model="fast-lite">
-              Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
-            </button>
-            <button class="alu-model-opt" data-model="super-fast">
-              Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
-            </button>
-            <button class="alu-model-opt" data-model="pro">
-              Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
-            </button>
-          </div>
+          <span class="text-xl font-semibold tracking-tight hidden md:inline">Aluetoo</span>
         </div>
         <div class="alu-topbar-right">
           <button class="alu-upgrade-btn" id="upgrade-btn">
@@ -255,7 +287,7 @@
       </div>
 
       <div class="alu-composer-wrap">
-        <div class="alu-composer" id="composer-box">
+        <div class="alu-composer" id="composer-box" style="position: relative;">
           <div id="attached-file-preview" class="hidden flex items-center gap-2 mb-2 p-1.5 bg-[#131314] border border-[#303133] rounded-xl max-w-max text-xs">
             <span class="material-symbols-outlined text-sm text-blue-400">description</span>
             <span id="attached-file-name" class="text-gray-300 max-w-[150px] truncate">fichier.txt</span>
@@ -274,8 +306,26 @@
                 <span class="material-symbols-outlined">image</span>
               </button>
             </div>
-            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
-              <span class="alu-model-pill" id="input-model-indicator">Fast Lite</span>
+            
+            <div class="alu-composer-tools-right relative flex items-center gap-3">
+              <!-- La Pilule Modèle transformée en Bouton avec symbole ‸ -->
+              <div class="alu-model-pill alu-model-pill-btn px-3 py-1.5 bg-[#2a2b2d] rounded-xl text-xs text-gray-300 flex items-center gap-1 font-medium" id="input-model-indicator-btn">
+                <span id="input-model-indicator">Fast Lite</span> <span class="text-[10px] text-gray-400 font-bold">‸</span>
+              </div>
+
+              <!-- Nouveau Menu avec Animation Pop-up depuis le bas -->
+              <div class="alu-model-menu-bottom" id="model-dropdown-bottom">
+                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="fast-lite">
+                  Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
+                </button>
+                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="super-fast">
+                  Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
+                </button>
+                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="pro">
+                  Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
+                </button>
+              </div>
+
               <button class="alu-send-btn" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
                 <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
               </button>
@@ -286,6 +336,7 @@
     </main>
   </div>
 
+  <!-- POP-UP BONUS -->
   <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
       <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
@@ -449,7 +500,6 @@
 
     function switchModel(key) {
       selectedModelKey = key;
-      document.getElementById("current-model-title").innerText = modelsConfig[key].name + " ▾";
       document.getElementById("input-model-indicator").innerText = modelsConfig[key].pill;
       checkGlobalLimits();
     }
@@ -462,18 +512,39 @@
     }
 
     function setupUI() {
-      const modelToggle = document.getElementById("model-menu-toggle");
-      const modelDropdown = document.getElementById("model-dropdown");
+      const modelToggleBtn = document.getElementById("input-model-indicator-btn");
+      const modelDropdownBottom = document.getElementById("model-dropdown-bottom");
       const input = document.getElementById("chat-input");
       const sendBtn = document.getElementById("send-btn");
 
-      modelToggle.addEventListener("click", () => modelDropdown.classList.toggle("hidden"));
+      // Ouvre/Ferme le menu déroulant en bas avec l'animation
+      modelToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        modelDropdownBottom.classList.toggle("show");
+      });
       
       document.querySelectorAll(".alu-model-opt").forEach(opt => {
         opt.addEventListener("click", (e) => {
           switchModel(e.currentTarget.getAttribute("data-model"));
-          modelDropdown.classList.add("hidden");
+          modelDropdownBottom.classList.remove("show");
         });
+      });
+
+      // --- LOGIQUE D'OUVERTURE DE LA SIDEBAR (HISTORIQUE) SUR MOBILE ---
+      const sidebar = document.getElementById("alu-sidebar");
+      const sidebarToggle = document.getElementById("mobile-sidebar-toggle");
+      const backdrop = document.getElementById("sidebar-backdrop");
+
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener("click", () => {
+          sidebar.classList.add("active");
+          backdrop.classList.remove("hidden");
+        });
+      }
+
+      backdrop.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        backdrop.classList.add("hidden");
       });
 
       input.addEventListener("input", () => {
@@ -506,6 +577,8 @@
         currentActiveChatId = null;
         document.getElementById("welcome-screen").classList.remove("hidden");
         input.style.height = "auto";
+        sidebar.classList.remove("active");
+        backdrop.classList.add("hidden");
       });
 
       document.getElementById("logout-btn").addEventListener("click", () => {
@@ -514,7 +587,9 @@
       });
 
       window.addEventListener("click", (e) => {
-        if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
+        if (!modelToggleBtn.contains(e.target)) {
+          modelDropdownBottom.classList.remove("show");
+        }
       });
 
       document.getElementById("update-location-btn").addEventListener("click", () => {
@@ -776,6 +851,10 @@
           });
           const containerWrap = document.getElementById("conversation-container");
           containerWrap.scrollTop = containerWrap.scrollHeight;
+
+          // Ferme la sidebar automatiquement après sélection sur mobile
+          document.getElementById("alu-sidebar").classList.remove("active");
+          document.getElementById("sidebar-backdrop").classList.add("hidden");
         });
 
         const actionsDiv = document.createElement("div");
