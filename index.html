@@ -15,6 +15,69 @@
   </script>
 
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Améliorations de l'historique pour matcher parfaitement ton design d'origine */
+    .alu-history-item-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1e1f20;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 6px 12px;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+      group-hover: block;
+    }
+    .alu-history-item-container:hover {
+      background-color: #2a2b2d;
+      border-color: #303133;
+    }
+    .alu-history-item-container.pinned {
+      border-color: rgba(138, 180, 248, 0.4);
+      background-color: rgba(30, 31, 32, 0.8);
+    }
+    .alu-history-btn-text {
+      flex: 1;
+      text-align: left;
+      font-size: 0.8rem;
+      color: #e3e3e3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .alu-history-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+    }
+    .alu-history-item-container:hover .alu-history-actions {
+      opacity: 1;
+    }
+    .alu-action-icon {
+      font-size: 16px !important;
+      cursor: pointer;
+      color: #9aa0a6;
+      transition: color 0.2s;
+    }
+    .alu-action-icon:hover {
+      color: #ffffff;
+    }
+    .alu-action-icon.delete:hover {
+      color: #ea4335;
+    }
+    .alu-action-icon.pinned-active {
+      color: #8ab4f8;
+    }
+  </style>
 </head>
 <body class="bg-[#131314] text-[#e3e3e3]">
 
@@ -182,7 +245,7 @@
   <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
       <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
-      <p class="text-xs text-[#9aa0a6] mb-4">Voici le code secret d'aujourd'hui (valable 24h). Entrez-le ci-dessous pour obtenir +1 message bonus sur Aluetoo Fast Lite !</p>
+      <p class="text-xs text-[#9aa0a6] mb-4">Voici le code secret d'aujourd'hui. Entrez-le ci-dessous pour obtenir +1 message bonus sur Aluetoo Fast Lite !</p>
       
       <div class="bg-[#131314] border border-[#303133] rounded-xl py-3 px-4 mb-4 font-mono text-xl text-[#8ab4f8] tracking-widest font-bold select-all" id="daily-code-display">
         ...
@@ -210,6 +273,7 @@
     let currentUser = null;
     let conversationHistory = [];
     let currentAttachedFile = null;
+    let currentActiveChatId = null; // Suivi du chat en cours
 
     function getUsage() {
       const now = Date.now();
@@ -343,10 +407,6 @@
       selectedModelKey = key;
       document.getElementById("current-model-title").innerText = modelsConfig[key].name + " ▾";
       document.getElementById("input-model-indicator").innerText = modelsConfig[key].pill;
-      
-      document.querySelectorAll(".alu-model-opt").forEach(btn => {
-        btn.classList.toggle("active", btn.getAttribute("data-model") === key);
-      });
       checkGlobalLimits();
     }
 
@@ -399,6 +459,7 @@
       document.getElementById("new-chat-btn").addEventListener("click", () => {
         document.getElementById("chat-messages").innerHTML = "";
         conversationHistory = [];
+        currentActiveChatId = null;
         document.getElementById("welcome-screen").classList.remove("hidden");
         input.style.height = "auto";
       });
@@ -412,13 +473,11 @@
         if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
       });
 
-      // Localisation
       document.getElementById("update-location-btn").addEventListener("click", () => {
         const newLoc = prompt("Entrez votre pays ou localisation :");
         if (newLoc) document.getElementById("current-location").innerText = newLoc;
       });
 
-      // Gestion des fichiers réels
       const realFileInput = document.getElementById("real-file-input");
       const filePreview = document.getElementById("attached-file-preview");
       const fileNameSpan = document.getElementById("attached-file-name");
@@ -440,65 +499,40 @@
         realFileInput.value = "";
       });
 
-      // Barre de recherche historique
       document.getElementById("search-history").addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase();
-        document.querySelectorAll(".alu-history-item").forEach(item => {
-          item.style.display = item.innerText.toLowerCase().includes(query) ? "block" : "none";
+        document.querySelectorAll(".alu-history-item-container").forEach(item => {
+          item.style.display = item.innerText.toLowerCase().includes(query) ? "flex" : "none";
         });
       });
 
-      // Sidebar Mobile Toggle
-      const mobileSidebarBtn = document.getElementById("mobile-sidebar-toggle");
-      const sidebar = document.querySelector(".alu-sidebar");
-      const backdrop = document.getElementById("sidebar-backdrop");
-
-      if (mobileSidebarBtn) {
-        mobileSidebarBtn.addEventListener("click", () => {
-          sidebar.classList.toggle("open");
-          backdrop.classList.toggle("hidden");
-        });
-      }
-      if (backdrop) {
-        backdrop.addEventListener("click", () => {
-          sidebar.classList.remove("open");
-          backdrop.classList.add("hidden");
-        });
-      }
-
-      // Bonus Quotidien
+      // Bonus Modal
       const upgradeBtn = document.getElementById("upgrade-btn");
       const bonusModal = document.getElementById("bonus-modal");
       const closeBonusModal = document.getElementById("close-bonus-modal");
       const submitBonusBtn = document.getElementById("submit-bonus-btn");
       const bonusInput = document.getElementById("bonus-code-input");
-      const dailyCodeDisplay = document.getElementById("daily-code-display");
 
       upgradeBtn.addEventListener("click", () => {
-        dailyCodeDisplay.innerText = getDailyCodeDetails().code;
+        document.getElementById("daily-code-display").innerText = getDailyCodeDetails().code;
         bonusInput.value = "";
         bonusModal.classList.remove("hidden");
       });
-
       closeBonusModal.addEventListener("click", () => bonusModal.classList.add("hidden"));
 
       submitBonusBtn.addEventListener("click", () => {
         const { dateStr, code } = getDailyCodeDetails();
         if (bonusInput.value.trim().toUpperCase() !== code) {
-          alert("Code incorrect pour aujourd'hui."); return;
+          alert("Code incorrect."); return;
         }
-
         const keyClaimed = `alu_bonus_claimed_${currentUser.email}_${dateStr}`;
-        if (localStorage.getItem(keyClaimed)) {
-          alert("Déjà récupéré aujourd'hui !"); return;
-        }
-
+        if (localStorage.getItem(keyClaimed)) { alert("Déjà récupéré aujourd'hui !"); return; }
+        
         const usage = getUsage();
         usage["fast-lite"] = Math.max(0, usage["fast-lite"] - 1);
         saveUsage(usage);
         localStorage.setItem(keyClaimed, "true");
-
-        alert("Félicitations ! 1 message bonus ajouté.");
+        alert("Bonus accordé !");
         bonusModal.classList.add("hidden");
         checkGlobalLimits();
       });
@@ -543,7 +577,7 @@
           body: JSON.stringify({
             model: modelsConfig[selectedModelKey].apiName,
             messages: [
-              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent à l'interface épurée créé par Léo Ciach. Tu ne sors jamais de ton rôle. Léo Ciach est né en 2014." },
+              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014." },
               ...conversationHistory
             ],
             temperature: 0.7
@@ -557,12 +591,13 @@
           const reply = data.choices[0].message.content;
           contentDiv.innerHTML = formatAIResponse(reply);
           conversationHistory.push({ role: "assistant", content: reply });
+          
           saveConversationToGlobal(text, reply);
         } else {
-          contentDiv.innerText = "Erreur avec l'API Aluetoo.";
+          contentDiv.innerText = "Erreur avec l'API.";
         }
       } catch (err) {
-        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau. Impossible de contacter le serveur Aluetoo.";
+        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau.";
       }
 
       container.scrollTop = container.scrollHeight;
@@ -597,43 +632,140 @@
       return wrapper;
     }
 
+    // --- GESTION COMPLÈTE DE L'HISTORIQUE (SAUVEGARDE, SUPPRESSION, ÉPINGLAGE) ---
     function saveConversationToGlobal(userPrompt, aiReply) {
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
       let list = saved ? JSON.parse(saved) : [];
-      list.push({ prompt: userPrompt, reply: aiReply, timestamp: Date.now() });
+
+      if (currentActiveChatId) {
+        // Met à jour la conversation en cours
+        const index = list.findIndex(c => c.id === currentActiveChatId);
+        if (index !== -1) {
+          list[index].history = [...conversationHistory];
+          localStorage.setItem(`alu_history_${currentUser.email}`, JSON.stringify(list));
+          loadSavedConversations();
+          return;
+        }
+      }
+
+      // Crée une toute nouvelle entrée de chat unique
+      const newId = "chat_" + Date.now();
+      currentActiveChatId = newId;
+      list.push({
+        id: newId,
+        prompt: userPrompt,
+        reply: aiReply,
+        history: [...conversationHistory],
+        pinned: false,
+        timestamp: Date.now()
+      });
+      
       localStorage.setItem(`alu_history_${currentUser.email}`, JSON.stringify(list));
+      loadSavedConversations();
+    }
+
+    function togglePinChat(id, e) {
+      e.stopPropagation(); // Évite d'ouvrir le chat en cliquant sur l'épingle
+      const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
+      if (!saved) return;
+      let list = JSON.parse(saved);
+      const index = list.findIndex(c => c.id === id);
+      if (index !== -1) {
+        list[index].pinned = !list[index].pinned;
+        localStorage.setItem(`alu_history_${currentUser.email}`, JSON.stringify(list));
+        loadSavedConversations();
+      }
+    }
+
+    function deleteChat(id, e) {
+      e.stopPropagation(); // Évite d'ouvrir le chat en supprimant
+      if (!confirm("Voulez-vous supprimer cette discussion ?")) return;
+      
+      const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
+      if (!saved) return;
+      let list = JSON.parse(saved);
+      list = list.filter(c => c.id !== id);
+      localStorage.setItem(`alu_history_${currentUser.email}`, JSON.stringify(list));
+      
+      if (currentActiveChatId === id) {
+        document.getElementById("chat-messages").innerHTML = "";
+        conversationHistory = [];
+        currentActiveChatId = null;
+        document.getElementById("welcome-screen").classList.remove("hidden");
+      }
       loadSavedConversations();
     }
 
     function loadSavedConversations() {
       const listContainer = document.getElementById("history-list");
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
-      if (!saved) return;
-
-      const items = JSON.parse(saved).reverse();
-      if (items.length > 0) {
-        const empty = listContainer.querySelector(".alu-history-empty");
-        if (empty) empty.remove();
-        listContainer.innerHTML = "";
-        
-        items.forEach((item) => {
-          const title = item.prompt.length > 20 ? item.prompt.substring(0, 20) + "..." : item.prompt;
-          const div = document.createElement("button");
-          div.className = "alu-history-item w-full text-left truncate block active";
-          div.innerHTML = `💬 ${title}`;
-          div.style.display = "block";
-          div.style.width = "100%";
-          div.addEventListener("click", () => {
-            document.getElementById("welcome-screen").classList.add("hidden");
-            const chatMessages = document.getElementById("chat-messages");
-            chatMessages.innerHTML = "";
-            appendMessageUI("user", item.prompt);
-            appendMessageUI("assistant", formatAIResponse(item.reply));
-            conversationHistory = [{ role: "user", content: item.prompt }, { role: "assistant", content: item.reply }];
-          });
-          listContainer.appendChild(div);
-        });
+      
+      listContainer.innerHTML = "";
+      if (!saved || JSON.parse(saved).length === 0) {
+        listContainer.innerHTML = '<div class="alu-history-empty">Aucune conversation</div>';
+        return;
       }
+
+      let items = JSON.parse(saved);
+
+      // Tri intelligent : Les épinglés en premier, puis tri par date décroissante
+      items.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return b.timestamp - a.timestamp;
+      });
+
+      items.forEach((item) => {
+        const title = item.prompt.length > 18 ? item.prompt.substring(0, 18) + "..." : item.prompt;
+        
+        // Création de la bulle d'historique premium assortie au design
+        const container = document.createElement("div");
+        container.className = `alu-history-item-container ${item.pinned ? 'pinned' : ''}`;
+        
+        // Texte cliquable
+        const textBtn = document.createElement("button");
+        textBtn.className = "alu-history-btn-text";
+        textBtn.innerHTML = `💬 ${title}`;
+        textBtn.addEventListener("click", () => {
+          document.getElementById("welcome-screen").classList.add("hidden");
+          const chatMessages = document.getElementById("chat-messages");
+          chatMessages.innerHTML = "";
+          
+          currentActiveChatId = item.id;
+          conversationHistory = item.history || [{ role: "user", content: item.prompt }, { role: "assistant", content: item.reply }];
+          
+          conversationHistory.forEach(msg => {
+            appendMessageUI(msg.role, msg.role === 'assistant' ? formatAIResponse(msg.content) : msg.content);
+          });
+          const containerWrap = document.getElementById("conversation-container");
+          containerWrap.scrollTop = containerWrap.scrollHeight;
+        });
+
+        // Conteneur d'actions (Épingler, Supprimer)
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "alu-history-actions";
+
+        // Icône Épingler
+        const pinIcon = document.createElement("span");
+        pinIcon.className = `material-symbols-outlined alu-action-icon ${item.pinned ? 'pinned-active' : ''}`;
+        pinIcon.innerText = "push_pin";
+        pinIcon.title = item.pinned ? "Désépingler" : "Épingler la discussion";
+        pinIcon.addEventListener("click", (e) => togglePinChat(item.id, e));
+
+        // Icône Poubelle
+        const deleteIcon = document.createElement("span");
+        deleteIcon.className = "material-symbols-outlined alu-action-icon delete";
+        deleteIcon.innerText = "delete";
+        deleteIcon.title = "Supprimer la discussion";
+        deleteIcon.addEventListener("click", (e) => deleteChat(item.id, e));
+
+        actionsDiv.appendChild(pinIcon);
+        actionsDiv.appendChild(deleteIcon);
+        
+        container.appendChild(textBtn);
+        container.appendChild(actionsDiv);
+        listContainer.appendChild(container);
+      });
     }
   </script>
 </body>
