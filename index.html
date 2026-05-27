@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* Améliorations de l'historique pour matcher parfaitement ton design d'origine */
+    /* --- DESIGN DE L'HISTORIQUE PREMIUM --- */
     .alu-history-item-container {
       display: flex;
       align-items: center;
@@ -29,7 +29,6 @@
       margin-bottom: 6px;
       transition: all 0.2s ease;
       position: relative;
-      group-hover: block;
     }
     .alu-history-item-container:hover {
       background-color: #2a2b2d;
@@ -76,6 +75,51 @@
     }
     .alu-action-icon.pinned-active {
       color: #8ab4f8;
+    }
+
+    /* ==============================================================
+       CORRECTION RESPONSIVE COMPLÈTE POUR SMARTPHONES (MAX 768PX)
+       ============================================================== */
+    @media screen and (max-width: 768px) {
+      
+      /* Force le titre à s'adapter proprement sur les petits écrans sans casser */
+      .alu-welcome-title, h1.alu-welcome-title {
+        font-size: 1.6rem !important;
+        line-height: 1.3 !important;
+        padding: 0 20px !important;
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+        word-wrap: break-word !important;
+      }
+
+      /* Ajuste la barre du haut pour que rien ne sorte de l'écran tactile */
+      .alu-topbar {
+        padding: 8px !important;
+        gap: 4px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+      }
+
+      .alu-upgrade-btn {
+        padding: 6px 10px !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap !important;
+      }
+
+      /* Espacement optimisé pour le bas de l'écran mobile */
+      .alu-composer-wrap {
+        padding: 0 8px 8px 8px !important;
+      }
+      .alu-composer {
+        padding: 8px !important;
+      }
+      
+      /* Affiche en permanence les boutons d'action d'historique sur mobile */
+      .alu-history-actions {
+        opacity: 1 !important;
+      }
     }
   </style>
 </head>
@@ -273,7 +317,7 @@
     let currentUser = null;
     let conversationHistory = [];
     let currentAttachedFile = null;
-    let currentActiveChatId = null; // Suivi du chat en cours
+    let currentActiveChatId = null;
 
     function getUsage() {
       const now = Date.now();
@@ -506,7 +550,6 @@
         });
       });
 
-      // Bonus Modal
       const upgradeBtn = document.getElementById("upgrade-btn");
       const bonusModal = document.getElementById("bonus-modal");
       const closeBonusModal = document.getElementById("close-bonus-modal");
@@ -632,13 +675,11 @@
       return wrapper;
     }
 
-    // --- GESTION COMPLÈTE DE L'HISTORIQUE (SAUVEGARDE, SUPPRESSION, ÉPINGLAGE) ---
     function saveConversationToGlobal(userPrompt, aiReply) {
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
       let list = saved ? JSON.parse(saved) : [];
 
       if (currentActiveChatId) {
-        // Met à jour la conversation en cours
         const index = list.findIndex(c => c.id === currentActiveChatId);
         if (index !== -1) {
           list[index].history = [...conversationHistory];
@@ -648,7 +689,6 @@
         }
       }
 
-      // Crée une toute nouvelle entrée de chat unique
       const newId = "chat_" + Date.now();
       currentActiveChatId = newId;
       list.push({
@@ -665,7 +705,7 @@
     }
 
     function togglePinChat(id, e) {
-      e.stopPropagation(); // Évite d'ouvrir le chat en cliquant sur l'épingle
+      e.stopPropagation();
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
       if (!saved) return;
       let list = JSON.parse(saved);
@@ -678,7 +718,7 @@
     }
 
     function deleteChat(id, e) {
-      e.stopPropagation(); // Évite d'ouvrir le chat en supprimant
+      e.stopPropagation();
       if (!confirm("Voulez-vous supprimer cette discussion ?")) return;
       
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
@@ -708,7 +748,6 @@
 
       let items = JSON.parse(saved);
 
-      // Tri intelligent : Les épinglés en premier, puis tri par date décroissante
       items.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
@@ -718,11 +757,9 @@
       items.forEach((item) => {
         const title = item.prompt.length > 18 ? item.prompt.substring(0, 18) + "..." : item.prompt;
         
-        // Création de la bulle d'historique premium assortie au design
         const container = document.createElement("div");
         container.className = `alu-history-item-container ${item.pinned ? 'pinned' : ''}`;
         
-        // Texte cliquable
         const textBtn = document.createElement("button");
         textBtn.className = "alu-history-btn-text";
         textBtn.innerHTML = `💬 ${title}`;
@@ -741,18 +778,15 @@
           containerWrap.scrollTop = containerWrap.scrollHeight;
         });
 
-        // Conteneur d'actions (Épingler, Supprimer)
         const actionsDiv = document.createElement("div");
         actionsDiv.className = "alu-history-actions";
 
-        // Icône Épingler
         const pinIcon = document.createElement("span");
         pinIcon.className = `material-symbols-outlined alu-action-icon ${item.pinned ? 'pinned-active' : ''}`;
         pinIcon.innerText = "push_pin";
         pinIcon.title = item.pinned ? "Désépingler" : "Épingler la discussion";
         pinIcon.addEventListener("click", (e) => togglePinChat(item.id, e));
 
-        // Icône Poubelle
         const deleteIcon = document.createElement("span");
         deleteIcon.className = "material-symbols-outlined alu-action-icon delete";
         deleteIcon.innerText = "delete";
