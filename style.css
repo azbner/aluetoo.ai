@@ -710,70 +710,61 @@ textarea, input, select { font: inherit; color: inherit; }
 [dir="rtl"] .alu-history-title-btn { text-align: right; }
 [dir="rtl"] .alu-nav-item { text-align: right; }
 [dir="rtl"] .alu-attach-menu { left: auto; right: 0; }
-/* ═══════════════ LA BONNE VERSION RESPONSIVE (TOUT EN BAS) ═══════════════ */
+/* ==========================================
+   CORRECTION RESPONSIVE UNIVERSELLE (MOBILE)
+   ========================================== */
 
-@media (max-width: 1024px) {
-  /* La grille principale passe sur une seule colonne */
-  .alu-app {
-    grid-template-columns: 1fr;
+/* Ajustements pour les écrans de smartphones (Moins de 768px) */
+@media (max-width: 768px) {
+  
+  /* 1. Titre d'accueil : évite que le texte géant ne s'écrase ou ne casse */
+  .alu-welcome-title {
+    font-size: 1.8rem !important; /* Réduit la taille pour que ça tienne sur mobile */
+    line-height: 1.4 !important;
+    padding: 0 15px !important;   /* Ajoute de l'espace sur les côtés */
+    text-align: center !important;
   }
 
-  /* On passe en position fixed mais avec "left" pour ne pas casser le bouton */
-  .alu-sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: -280px; /* Caché à gauche */
-    width: 280px;
-    z-index: 50;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
-    transform: none !important; /* On vire le transform qui cassait tout */
-    transition: left 280ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-  }
-
-  /* Quand le JS ajoute .open, on fait glisser via left */
-  .alu-sidebar.open {
-    left: 0;
-  }
-
-  /* On affiche le bouton menu */
-  .alu-menu-btn {
-    display: flex !important;
-  }
-
-  /* Grâce au correctif ci-dessus, ce code fonctionne enfin et affiche le bouton sur l'écran */
-  .alu-sidebar:not(.open) .alu-menu-btn {
-    position: fixed;
-    left: 16px;
-    top: 14px;
-    z-index: 60;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-  }
-
-  /* On décale la topbar pour laisser la place au bouton */
+  /* 2. Barre du haut : repositionne les boutons pour qu'ils ne se chevauchent pas */
   .alu-topbar {
-    padding-left: 76px;
-  }
-}
-
-@media (max-width: 640px) {
-  /* Ajustements fins pour smartphones */
-  .alu-topbar {
-    padding-left: 64px;
-    padding-right: 16px;
+    padding: 10px 8px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important; /* Permet de passer à la ligne si l'écran est minuscule */
   }
 
-  .alu-sidebar:not(.open) .alu-menu-btn {
-    left: 12px;
-    top: 14px;
+  .alu-upgrade-btn {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important; /* Rend le bouton bleu plus discret sur mobile */
   }
 
-  .alu-conversation {
-    padding: 0 16px;
-  }
-
+  /* 3. Zone d'écriture : s'assure que la barre d'outils reste propre */
   .alu-composer-wrap {
-    padding: 0 12px 12px;
+    padding: 0 8px 8px 8px !important;
+  }
+
+  .alu-composer {
+    padding: 10px !important;
+  }
+
+  .alu-textarea {
+    font-size: 0.9rem !important;
+  }
+
+  .alu-composer-bar {
+    margin-top: 8px !important;
+  }
+
+  /* 4. Historique et boutons d'actions sur mobile */
+  .alu-history-item-container {
+    padding: 8px 10px !important; /* Un peu plus grand pour faciliter le clic au doigt */
+  }
+
+  .alu-history-btn-text {
+    font-size: 0.85rem !important;
+  }
+
+  /* Force la visibilité des boutons épingler/supprimer sur mobile (pas de survol à la souris) */
+  .alu-history-actions {
+    opacity: 1 !important;
   }
 }
