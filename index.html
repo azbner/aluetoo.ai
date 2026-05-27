@@ -14,43 +14,29 @@
     }
   </script>
 
-  <style>
-    /* Styles de base pour l'application si style.css est manquant */
-    :root { --gradient: linear-gradient(135deg, #8ab4f8, #c58af8); }
-    .alu-sidebar { width: 260px; height: 100vh; background: #1e1f20; display: flex; flex-direction: column; padding: 12px; z-index: 40; transition: transform 0.3s ease; }
-    .alu-main { flex: 1; height: 100vh; display: flex; flex-direction: column; background: #131314; position: relative; }
-    @media (max-width: 768px) {
-      .alu-sidebar { position: fixed; transform: translateX(-100%); }
-      .alu-sidebar.open { transform: translateX(0); }
-    }
-    /* Scrollbar personnalisée */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #303133; border-radius: 4px; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#131314] text-[#e3e3e3] font-sans overflow-hidden">
+<body class="bg-[#131314] text-[#e3e3e3]">
 
-  <!-- ÉCRAN D'AUTHENTIFICATION -->
   <div id="auth-screen" class="fixed inset-0 bg-[#131314] z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1f20] border border-[#303133] p-8 rounded-2xl w-full max-w-md shadow-2xl">
       <div class="flex items-center gap-2 mb-6 justify-center">
-        <span class="text-3xl font-bold bg-gradient-to-r from-[#8ab4f8] to-[#c58af8] bg-clip-text text-transparent">✦</span>
+        <span class="text-3xl" style="background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">✦</span>
         <h2 class="text-2xl font-medium tracking-tight" id="auth-title">Connexion à Aluetoo</h2>
       </div>
 
       <form id="auth-form" class="space-y-4">
         <div id="firstname-field" class="hidden">
           <label class="block text-xs text-[#9aa0a6] mb-1 font-medium">Prénom</label>
-          <input type="text" id="auth-firstname" class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8ab4f8]" placeholder="Votre prénom">
+          <input type="text" id="auth-firstname" class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]" placeholder="ici">
         </div>
         <div>
           <label class="block text-xs text-[#9aa0a6] mb-1 font-medium">Adresse e-mail</label>
-          <input type="email" id="auth-email" required class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8ab4f8]" placeholder="nom@exemple.com">
+          <input type="email" id="auth-email" required class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]" placeholder="nom@exemple.com">
         </div>
         <div>
           <label class="block text-xs text-[#9aa0a6] mb-1 font-medium">Mot de passe</label>
-          <input type="password" id="auth-password" required class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#8ab4f8]" placeholder="••••••••">
+          <input type="password" id="auth-password" required class="w-full bg-[#131314] border border-[#303133] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]" placeholder="••••••••">
         </div>
 
         <button type="submit" id="auth-submit-btn" class="w-full bg-[#4285f4] hover:bg-[#357ae8] text-white rounded-xl py-3 text-sm font-medium transition mt-2">
@@ -65,150 +51,126 @@
     </div>
   </div>
 
-  <!-- APPLICATION PRINCIPALE -->
-  <div class="hidden flex h-screen w-screen overflow-hidden" id="app-container">
+  <div class="alu-app hidden" id="app-container">
     
-    <!-- BARRE LATÉRALE (SIDEBAR) -->
-    <aside class="alu-sidebar border-r border-[#303133] shrink-0">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <div class="text-xl font-bold bg-gradient-to-r from-[#8ab4f8] to-[#c58af8] bg-clip-text text-transparent">✦</div>
-          <span class="font-medium text-lg">Aluetoo</span>
-        </div>
-        <button class="md:hidden text-gray-400 hover:text-white" id="mobile-close-sidebar">
-          <span class="material-symbols-outlined">close</span>
+    <aside class="alu-sidebar">
+      <div class="alu-sidebar-top">
+        <button class="alu-menu-btn" id="mobile-sidebar-toggle">
+          <span class="material-symbols-outlined">menu</span>
         </button>
+        <div class="alu-brand">
+          <div class="alu-brand-icon" style="background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem; font-weight: bold;">✦</div>
+          <span class="alu-brand-name">Aluetoo</span>
+        </div>
       </div>
 
-      <button class="flex items-center justify-center gap-2 w-full bg-[#303133] hover:bg-[#3c3d3f] text-white rounded-xl py-3 text-sm font-medium transition mb-4" id="new-chat-btn">
-        <span class="material-symbols-outlined text-sm">add</span> Nouvelle conversation
+      <button class="alu-new-chat" id="new-chat-btn">
+        <span class="material-symbols-outlined">add</span> Nouvelle conversation
       </button>
 
-      <!-- BARRE DE RECHERCHE DANS L'HISTORIQUE (FONCTIONNELLE) -->
-      <div class="relative mb-4">
-        <span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-500 text-sm">search</span>
-        <input type="text" id="search-history" placeholder="Rechercher une discussion..." class="w-full bg-[#131314] border border-[#303133] rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-[#8ab4f8]">
+      <div class="alu-nav-items">
+        <div class="relative px-2 mb-2">
+          <input type="text" id="search-history" placeholder="Rechercher une discussion..." class="w-full bg-[#131314] border border-[#303133] rounded-xl pl-3 pr-3 py-2 text-xs text-white focus:outline-none focus:border-[#8ab4f8]">
+        </div>
+        <button class="alu-nav-item" onclick="alert('Bibliothèque bientôt disponible !')">
+          <span class="material-symbols-outlined">description</span> Bibliothèque
+        </button>
       </div>
 
-      <!-- HISTORIQUE DES DISCUSSIONS -->
-      <div class="flex-1 overflow-y-auto space-y-1 mb-4">
-        <p class="text-xs font-semibold text-gray-500 px-2 mb-2 uppercase tracking-wider">Discussions récentes</p>
-        <div class="space-y-1" id="history-list">
-          <div class="text-xs text-gray-500 italic p-2 alu-history-empty">Aucune conversation</div>
+      <div class="alu-history-section">
+        <p class="alu-section-label">Le dernier</p>
+        <div class="alu-history-list" id="history-list">
+          <div class="alu-history-empty">Aucune conversation</div>
         </div>
       </div>
 
-      <!-- LIENS DU BAS -->
-      <div class="border-t border-[#303133] pt-4 space-y-2 text-sm">
-        <button class="flex items-center gap-3 w-full text-gray-400 hover:text-white p-2 rounded-lg transition hover:bg-[#303133]" onclick="alert('Fonctionnalité Activité bientôt disponible !')">
+      <div class="alu-activity">
+        <button class="alu-nav-item" onclick="alert('Activité bientôt disponible !')">
           <span class="material-symbols-outlined">history</span> Activité
         </button>
-        
-        <!-- BLOCK UTILISATEUR -->
-        <div class="bg-[#131314] p-3 rounded-xl border border-[#303133]">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white" id="user-avatar">LC</div>
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-medium text-white truncate" id="user-display-name">Utilisateur</p>
-              <p class="text-[10px] text-gray-500">Créé par Léo Ciach</p>
-            </div>
-            <button class="text-gray-400 hover:text-red-400 transition" id="logout-btn" title="Se déconnecter">
-              <span class="material-symbols-outlined text-lg">logout</span>
-            </button>
+      </div>
+
+      <div class="alu-user-block">
+        <div class="alu-user-row">
+          <div class="alu-avatar" id="user-avatar" style="color: white; font-weight: bold; font-size: 0.85rem;">LE</div>
+          <div class="alu-user-info">
+            <p class="alu-user-name" id="user-display-name">LEO</p>
           </div>
-          <div class="flex gap-2 text-[10px] text-gray-400 items-start border-t border-[#303133] pt-2 mt-2">
-            <span class="material-symbols-outlined text-xs text-blue-400">location_on</span>
-            <div class="flex-1">
-              <p class="font-medium text-white" id="current-location">Belgique</p>
-              <button class="text-blue-400 hover:underline mt-0.5" id="update-location-btn">Mettre à jour l'emplacement</button>
-            </div>
+          <button class="alu-settings-btn" id="logout-btn" title="Se déconnecter">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+        <div class="alu-loc-block">
+          <span class="material-symbols-outlined" style="font-size: 16px; margin-top: 2px;">location_on</span>
+          <div>
+            <p class="alu-loc-name" id="current-location">Belgique</p>
+            <p class="alu-loc-desc">En fonction de votre lieu de résidence</p>
+            <button class="alu-loc-update" id="update-location-btn">Mettre à jour l'emplacement</button>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- ARRIÈRE-PLAN MOBILE -->
-    <div class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" id="sidebar-backdrop"></div>
+    <div class="alu-backdrop hidden" id="sidebar-backdrop"></div>
 
-    <!-- ZONE DE CHAT PRINCIPALE -->
-    <main class="alu-main flex flex-col flex-grow">
+    <main class="alu-main">
       
-      <!-- TOPBAR -->
-      <div class="flex items-center justify-between p-4 border-b border-[#303133] bg-[#131314]">
-        <div class="flex items-center gap-3">
-          <button class="md:hidden text-gray-400 hover:text-white" id="mobile-sidebar-toggle">
-            <span class="material-symbols-outlined">menu</span>
+      <div class="alu-topbar">
+        <div class="alu-topbar-left">
+          <button class="alu-topbar-brand" id="model-menu-toggle">
+            <span class="alu-topbar-title" id="current-model-title">Aluetoo Fast Lite ▾</span>
           </button>
           
-          <div class="relative">
-            <button class="bg-[#1e1f20] border border-[#303133] px-3 py-1.5 rounded-xl text-sm flex items-center gap-2 hover:bg-[#2a2b2d] transition" id="model-menu-toggle">
-              <span id="current-model-title">Aluetoo Fast Lite</span>
-              <span class="material-symbols-outlined text-xs">arrow_drop_down</span>
+          <div class="alu-model-menu hidden" id="model-dropdown">
+            <button class="alu-model-opt" data-model="fast-lite">
+              Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
             </button>
-            
-            <!-- MODEL DROPDOWN -->
-            <div class="absolute left-0 mt-2 w-56 bg-[#1e1f20] border border-[#303133] rounded-xl shadow-xl hidden z-50 py-1" id="model-dropdown">
-              <button class="w-full text-left px-4 py-2 text-sm hover:bg-[#303133] flex justify-between items-center" data-model="fast-lite">
-                <span>Aluetoo Fast Lite</span> <span class="text-xs text-gray-500" id="count-fast-lite">(20/20)</span>
-              </button>
-              <button class="w-full text-left px-4 py-2 text-sm hover:bg-[#303133] flex justify-between items-center" data-model="super-fast">
-                <span>Aluetoo Super Fast</span> <span class="text-xs text-gray-500" id="count-super-fast">(10/10)</span>
-              </button>
-              <button class="w-full text-left px-4 py-2 text-sm hover:bg-[#303133] flex justify-between items-center" data-model="pro">
-                <span>Aluetoo Pro</span> <span class="text-xs text-gray-500" id="count-pro">(5/5)</span>
-              </button>
-            </div>
+            <button class="alu-model-opt" data-model="super-fast">
+              Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
+            </button>
+            <button class="alu-model-opt" data-model="pro">
+              Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
+            </button>
           </div>
         </div>
-
-        <div>
-          <button class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-medium text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition" id="upgrade-btn">
-            <span class="material-symbols-outlined text-sm">auto_awesome</span> Bonus Quotidien
+        <div class="alu-topbar-right">
+          <button class="alu-upgrade-btn" id="upgrade-btn">
+            <span class="material-symbols-outlined" style="font-size: 18px;">auto_awesome</span> Passez à une formule supérieure
           </button>
         </div>
       </div>
 
-      <!-- FENÊTRE DE CONVERSATION -->
-      <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6" id="conversation-container">
-        <!-- Écran d'accueil si vide -->
-        <div class="flex flex-col items-center justify-center h-full text-center py-20" id="welcome-screen">
-          <h1 class="text-3xl md:text-4xl font-semibold tracking-tight max-w-xl text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500" id="welcome-text">
-            Avez-vous de nouvelles idées ?
-          </h1>
-          <p class="text-gray-500 text-sm mt-2">Discutez avec Aluetoo AI, propulsé par Léo Ciach</p>
+      <div class="alu-conversation" id="conversation-container">
+        <div class="alu-welcome" id="welcome-screen">
+          <h1 class="alu-welcome-title" id="welcome-text">Avez-vous de nouvelles idées LEO ?</h1>
         </div>
-        <!-- Conteneur des messages injectés -->
-        <div class="max-w-3xl mx-auto space-y-6" id="chat-messages"></div>
+        <div class="alu-messages" id="chat-messages"></div>
       </div>
 
-      <!-- COMPOSER DE MESSAGE -->
-      <div class="p-4 bg-[#131314]">
-        <div class="max-w-3xl mx-auto bg-[#1e1f20] border border-[#303133] rounded-2xl p-3 shadow-lg focus-within:border-gray-500 transition" id="composer-box">
-          <!-- Zone d'affichage des fichiers attachés (Simulation) -->
+      <div class="alu-composer-wrap">
+        <div class="alu-composer" id="composer-box">
           <div id="attached-file-preview" class="hidden flex items-center gap-2 mb-2 p-1.5 bg-[#131314] border border-[#303133] rounded-xl max-w-max text-xs">
             <span class="material-symbols-outlined text-sm text-blue-400">description</span>
             <span id="attached-file-name" class="text-gray-300 max-w-[150px] truncate">fichier.txt</span>
             <button class="text-gray-500 hover:text-red-400 ml-1" id="remove-file-btn"><span class="material-symbols-outlined text-xs">close</span></button>
           </div>
 
-          <textarea class="w-full bg-transparent text-sm resize-none text-white focus:outline-none placeholder-gray-500 max-h-48" id="chat-input" placeholder="Demandez à Aluetoo" rows="1"></textarea>
+          <textarea class="alu-textarea" id="chat-input" placeholder="Demandez à Aluetoo" rows="1"></textarea>
           
-          <div class="flex items-center justify-between mt-3 border-t border-[#303133]/50 pt-2">
-            <div class="flex items-center gap-1">
-              <!-- Inputs de fichiers masqués réels -->
+          <div class="alu-composer-bar">
+            <div class="alu-composer-tools-left">
               <input type="file" id="real-file-input" class="hidden">
-              <button class="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-[#303133] transition" id="attach-btn" title="Ajouter un document">
-                <span class="material-symbols-outlined text-lg">add</span>
+              <button class="alu-tool-btn alu-attach-btn" id="attach-btn">
+                <span class="material-symbols-outlined">add</span>
               </button>
-              <button class="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-[#303133] transition" id="image-btn" title="Ajouter une image">
-                <span class="material-symbols-outlined text-lg">image</span>
+              <button class="alu-tool-btn" id="image-btn">
+                <span class="material-symbols-outlined">image</span>
               </button>
             </div>
-            
-            <div class="flex items-center gap-3">
-              <span class="bg-[#303133] text-gray-300 text-[11px] px-2.5 py-1 rounded-full font-medium" id="input-model-indicator">Fast Lite</span>
-              <button class="w-8 h-8 rounded-full flex items-center justify-center transition" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
-                <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
+              <span class="alu-model-pill" id="input-model-indicator">Fast Lite</span>
+              <button class="alu-send-btn" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
+                <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
               </button>
             </div>
           </div>
@@ -217,11 +179,10 @@
     </main>
   </div>
 
-  <!-- POP-UP CODE BONUS QUOTIDIEN -->
   <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
       <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
-      <p class="text-xs text-[#9aa0a6] mb-4">Voici le code secret d'aujourd'hui. Entrez-le ci-dessous pour obtenir +1 message bonus sur Aluetoo Fast Lite !</p>
+      <p class="text-xs text-[#9aa0a6] mb-4">Voici le code secret d'aujourd'hui (valable 24h). Entrez-le ci-dessous pour obtenir +1 message bonus sur Aluetoo Fast Lite !</p>
       
       <div class="bg-[#131314] border border-[#303133] rounded-xl py-3 px-4 mb-4 font-mono text-xl text-[#8ab4f8] tracking-widest font-bold select-all" id="daily-code-display">
         ...
@@ -236,29 +197,24 @@
     </div>
   </div>
 
-  <!-- INJECTION LOGIQUE JAVASCRIPT -->
   <script>
-    // Configuration de l'API Groq
     const GROQ_API_KEY = "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";
     
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
-      "pro": { name: "Aluetoo Pro", apiName: "llama-3.3-70b-versatile", limit: 5, pill: "Aluetoo Pro" } 
+      "pro": { name: "Aluetoo Pro", apiName: "llama-3.3-70b-versatile", limit: 5, pill: "Aluetoo Pro" }
     };
 
     let selectedModelKey = "fast-lite";
     let currentUser = null;
-    let conversationHistory = []; // Gère la mémoire contextuelle dynamique de la session
-    let allConversations = [];    // Stockage global de toutes les discussions pour la recherche
+    let conversationHistory = [];
     let currentAttachedFile = null;
 
-    // --- ENREGISTREMENT ET CALCUL DES LIMITES ---
     function getUsage() {
       const now = Date.now();
       const SIX_HOURS = 6 * 60 * 60 * 1000;
       let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
-      
       if (!data) {
         data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
       } else {
@@ -280,7 +236,6 @@
       setupUI();
     });
 
-    // --- ENREGISTREMENT / CONNEXION UTILISATEURS ---
     function setupAuth() {
       const authForm = document.getElementById("auth-form");
       const authTitle = document.getElementById("auth-title");
@@ -346,18 +301,16 @@
     function startApp() {
       document.getElementById("auth-screen").classList.add("hidden");
       document.getElementById("app-container").classList.remove("hidden");
-      document.getElementById("app-container").classList.add("flex");
       
       document.getElementById("user-display-name").innerText = currentUser.firstname;
       document.getElementById("user-avatar").innerText = currentUser.firstname.substring(0,2).toUpperCase();
-      document.getElementById("welcome-text").innerText = `Avez-vous de nouvelles idées, ${currentUser.firstname} ?`;
+      document.getElementById("welcome-text").innerText = `Avez-vous de nouvelles idées ${currentUser.firstname.toUpperCase()} ?`;
       
       loadSavedConversations();
       updateLimitCountersDisplay();
       checkGlobalLimits();
     }
 
-    // --- CONTRÔLES DES COMPTEURS & MODÈLES ---
     function checkGlobalLimits() {
       const usage = getUsage();
       const input = document.getElementById("chat-input");
@@ -369,7 +322,8 @@
           return;
         }
         input.disabled = true;
-        input.placeholder = "Limite atteinte pour ce modèle. Attendez 6h.";
+        input.value = "";
+        input.placeholder = "Limite de messages atteinte. Changez de modèle.";
         composer.style.opacity = "0.6";
       } else {
         input.disabled = false;
@@ -387,8 +341,12 @@
 
     function switchModel(key) {
       selectedModelKey = key;
-      document.getElementById("current-model-title").innerText = modelsConfig[key].name;
+      document.getElementById("current-model-title").innerText = modelsConfig[key].name + " ▾";
       document.getElementById("input-model-indicator").innerText = modelsConfig[key].pill;
+      
+      document.querySelectorAll(".alu-model-opt").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-model") === key);
+      });
       checkGlobalLimits();
     }
 
@@ -399,44 +357,45 @@
       return { dateStr: `${d.getFullYear()}-${month}-${day}`, code: `ALU-${day}${month}` };
     }
 
-    // --- RECHERCHE ET ACTIONS INTERFACES ---
     function setupUI() {
       const modelToggle = document.getElementById("model-menu-toggle");
       const modelDropdown = document.getElementById("model-dropdown");
       const input = document.getElementById("chat-input");
       const sendBtn = document.getElementById("send-btn");
 
-      // Dropdown Modèles
-      modelToggle.addEventListener("click", (e) => { e.stopPropagation(); modelDropdown.classList.toggle("hidden"); });
-      document.querySelectorAll("[data-model]").forEach(opt => {
+      modelToggle.addEventListener("click", () => modelDropdown.classList.toggle("hidden"));
+      
+      document.querySelectorAll(".alu-model-opt").forEach(opt => {
         opt.addEventListener("click", (e) => {
           switchModel(e.currentTarget.getAttribute("data-model"));
           modelDropdown.classList.add("hidden");
         });
       });
-      window.addEventListener("click", () => modelDropdown.classList.add("hidden"));
 
-      // Textarea Auto-resize dynamique
       input.addEventListener("input", () => {
         input.style.height = "auto";
         input.style.height = input.scrollHeight + "px";
-        
+
         if (input.value.trim().length > 0 && !input.disabled) {
-          sendBtn.disabled = false; sendBtn.style.background = "white"; sendBtn.style.color = "#0d0e0f";
+          sendBtn.disabled = false;
+          sendBtn.style.background = "white";
+          sendBtn.style.color = "#0d0e0f";
         } else {
-          sendBtn.disabled = true; sendBtn.style.background = "#333537"; sendBtn.style.color = "#7a7e84";
+          sendBtn.disabled = true;
+          sendBtn.style.background = "#333537";
+          sendBtn.style.color = "#7a7e84";
         }
       });
 
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey && !sendBtn.disabled) {
-          e.preventDefault(); handleSendMessage();
+          e.preventDefault();
+          handleSendMessage();
         }
       });
 
       sendBtn.addEventListener("click", handleSendMessage);
-
-      // Nouvelle conversation
+      
       document.getElementById("new-chat-btn").addEventListener("click", () => {
         document.getElementById("chat-messages").innerHTML = "";
         conversationHistory = [];
@@ -444,18 +403,22 @@
         input.style.height = "auto";
       });
 
-      // Déconnexion
       document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("alu_session"); window.location.reload();
+        localStorage.removeItem("alu_session");
+        window.location.reload();
       });
 
-      // Gestion de la localisation
+      window.addEventListener("click", (e) => {
+        if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
+      });
+
+      // Localisation
       document.getElementById("update-location-btn").addEventListener("click", () => {
-        const newLoc = prompt("Entrez votre pays ou ville :");
+        const newLoc = prompt("Entrez votre pays ou localisation :");
         if (newLoc) document.getElementById("current-location").innerText = newLoc;
       });
 
-      // --- LOGIQUE DES ATTACHEMENTS DE FICHIERS/IMAGES ---
+      // Gestion des fichiers réels
       const realFileInput = document.getElementById("real-file-input");
       const filePreview = document.getElementById("attached-file-preview");
       const fileNameSpan = document.getElementById("attached-file-name");
@@ -477,57 +440,70 @@
         realFileInput.value = "";
       });
 
-      // --- FILTRE RECHERCHE DANS L'HISTORIQUE ---
+      // Barre de recherche historique
       document.getElementById("search-history").addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase();
-        const items = document.querySelectorAll(".alu-history-item");
-        items.forEach(item => {
-          const txt = item.innerText.toLowerCase();
-          item.style.display = txt.includes(query) ? "block" : "none";
+        document.querySelectorAll(".alu-history-item").forEach(item => {
+          item.style.display = item.innerText.toLowerCase().includes(query) ? "block" : "none";
         });
       });
 
-      // --- DESIGN MOBILE SIDEBAR ENTIÈREMENT FONCTIONNEL ---
+      // Sidebar Mobile Toggle
+      const mobileSidebarBtn = document.getElementById("mobile-sidebar-toggle");
       const sidebar = document.querySelector(".alu-sidebar");
       const backdrop = document.getElementById("sidebar-backdrop");
-      
-      document.getElementById("mobile-sidebar-toggle").addEventListener("click", () => {
-        sidebar.classList.add("open"); backdrop.classList.remove("hidden");
-      });
-      document.getElementById("mobile-close-sidebar").addEventListener("click", () => {
-        sidebar.classList.remove("open"); backdrop.classList.add("hidden");
-      });
-      backdrop.addEventListener("click", () => {
-        sidebar.classList.remove("open"); backdrop.classList.add("hidden");
-      });
 
-      // --- LOGIQUE BONUS QUOTIDIEN ---
+      if (mobileSidebarBtn) {
+        mobileSidebarBtn.addEventListener("click", () => {
+          sidebar.classList.toggle("open");
+          backdrop.classList.toggle("hidden");
+        });
+      }
+      if (backdrop) {
+        backdrop.addEventListener("click", () => {
+          sidebar.classList.remove("open");
+          backdrop.classList.add("hidden");
+        });
+      }
+
+      // Bonus Quotidien
       const upgradeBtn = document.getElementById("upgrade-btn");
       const bonusModal = document.getElementById("bonus-modal");
+      const closeBonusModal = document.getElementById("close-bonus-modal");
+      const submitBonusBtn = document.getElementById("submit-bonus-btn");
+      const bonusInput = document.getElementById("bonus-code-input");
+      const dailyCodeDisplay = document.getElementById("daily-code-display");
+
       upgradeBtn.addEventListener("click", () => {
-        document.getElementById("daily-code-display").innerText = getDailyCodeDetails().code;
+        dailyCodeDisplay.innerText = getDailyCodeDetails().code;
+        bonusInput.value = "";
         bonusModal.classList.remove("hidden");
       });
-      document.getElementById("close-bonus-modal").addEventListener("click", () => bonusModal.classList.add("hidden"));
-      
-      document.getElementById("submit-bonus-btn").addEventListener("click", () => {
+
+      closeBonusModal.addEventListener("click", () => bonusModal.classList.add("hidden"));
+
+      submitBonusBtn.addEventListener("click", () => {
         const { dateStr, code } = getDailyCodeDetails();
-        if (document.getElementById("bonus-code-input").value.trim().toUpperCase() !== code) {
-          alert("Code incorrect."); return;
+        if (bonusInput.value.trim().toUpperCase() !== code) {
+          alert("Code incorrect pour aujourd'hui."); return;
         }
+
         const keyClaimed = `alu_bonus_claimed_${currentUser.email}_${dateStr}`;
-        if (localStorage.getItem(keyClaimed)) { alert("Déjà récupéré aujourd'hui !"); return; }
-        
+        if (localStorage.getItem(keyClaimed)) {
+          alert("Déjà récupéré aujourd'hui !"); return;
+        }
+
         const usage = getUsage();
         usage["fast-lite"] = Math.max(0, usage["fast-lite"] - 1);
         saveUsage(usage);
         localStorage.setItem(keyClaimed, "true");
-        alert("Félicitations ! +1 message Fast Lite accordé.");
+
+        alert("Félicitations ! 1 message bonus ajouté.");
         bonusModal.classList.add("hidden");
+        checkGlobalLimits();
       });
     }
 
-    // --- ENVOI DE MESSAGE ET REQUÊTE LLM ---
     async function handleSendMessage() {
       const input = document.getElementById("chat-input");
       let text = input.value.trim();
@@ -539,9 +515,8 @@
       usage[selectedModelKey] += 1;
       saveUsage(usage);
 
-      // Injecter le fichier si présent
       if (currentAttachedFile) {
-        text = `[Fichier joint: ${currentAttachedFile.name}] \n\n` + text;
+        text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
         currentAttachedFile = null;
         document.getElementById("attached-file-preview").classList.add("hidden");
       }
@@ -553,9 +528,8 @@
 
       appendMessageUI("user", text);
       conversationHistory.push({ role: "user", content: text });
-      updateSidebarHistory(text);
 
-      const aiBubble = appendMessageUI("assistant", "Pensée en cours...");
+      const aiBubble = appendMessageUI("assistant", "...");
       const container = document.getElementById("conversation-container");
       container.scrollTop = container.scrollHeight;
 
@@ -578,54 +552,51 @@
 
         const data = await response.json();
         const contentDiv = aiBubble.querySelector(".alu-msg-content");
-
+        
         if (data.choices && data.choices[0]) {
           const reply = data.choices[0].message.content;
-          contentDiv.innerHTML = formatAIResponse(reply); // Rendu propre avec retours lignes et gras
+          contentDiv.innerHTML = formatAIResponse(reply);
           conversationHistory.push({ role: "assistant", content: reply });
           saveConversationToGlobal(text, reply);
         } else {
-          contentDiv.innerText = "Une erreur est survenue avec le quota ou la clé API.";
+          contentDiv.innerText = "Erreur avec l'API Aluetoo.";
         }
       } catch (err) {
-        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau. Impossible de joindre Aluetoo.";
+        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau. Impossible de contacter le serveur Aluetoo.";
       }
+
       container.scrollTop = container.scrollHeight;
       checkGlobalLimits();
     }
 
-    // --- FORMATEUR DE TEXTE DE L'IA (MARKDOWN BASIQUE) ---
     function formatAIResponse(text) {
-      let formatted = text
-        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") // Sécurisation XSS
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Rendu du texte en **Gras**
-        .replace(/`([^`]+)`/g, '<code class="bg-black/30 px-1 py-0.5 rounded font-mono text-xs text-amber-400">$1</code>') // Blocs de code simples
-        .replace(/\n/g, "<br>"); // Sauts de lignes
-      return formatted;
+      return text
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, "<br>");
     }
 
     function appendMessageUI(sender, text) {
       const holder = document.getElementById("chat-messages");
       const wrapper = document.createElement("div");
-      wrapper.className = `flex gap-4 ${sender === "user" ? "justify-end" : "justify-start"}`;
+      wrapper.className = `alu-msg alu-msg-${sender}`;
 
       if (sender === "assistant") {
         wrapper.innerHTML = `
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 bg-gradient-to-r from-[#8ab4f8] to-[#c58af8] text-white">✦</div>
-          <div class="bg-[#1e1f20] border border-[#303133] px-4 py-3 rounded-2xl max-w-xl text-sm leading-relaxed text-[#e3e3e3]">
-            <div class="alu-msg-content">${text.replace(/\n/g, '<br>')}</div>
+          <div class="alu-msg-avatar" style="background: var(--gradient); border:none; color:white; font-size:12px; font-weight:bold;">✦</div>
+          <div class="alu-msg-body">
+            <div class="alu-msg-content"><p>${text.replace(/\n/g, '<br>')}</p></div>
           </div>`;
       } else {
         wrapper.innerHTML = `
-          <div class="bg-[#303133] px-4 py-3 rounded-2xl max-w-xl text-sm leading-relaxed text-white">
-            <div class="alu-msg-content">${text.replace(/\n/g, '<br>')}</div>
+          <div class="alu-msg-body">
+            <div class="alu-msg-content"><p>${text.replace(/\n/g, '<br>')}</p></div>
           </div>`;
       }
       holder.appendChild(wrapper);
       return wrapper;
     }
 
-    // --- SAUVEGARDE ET CHARGEMENT LOCAL DE L'HISTORIQUE ---
     function saveConversationToGlobal(userPrompt, aiReply) {
       const saved = localStorage.getItem(`alu_history_${currentUser.email}`);
       let list = saved ? JSON.parse(saved) : [];
@@ -646,31 +617,23 @@
         listContainer.innerHTML = "";
         
         items.forEach((item) => {
-          const title = item.prompt.length > 22 ? item.prompt.substring(0, 22) + "..." : item.prompt;
+          const title = item.prompt.length > 20 ? item.prompt.substring(0, 20) + "..." : item.prompt;
           const div = document.createElement("button");
-          div.className = "alu-history-item w-full text-left text-xs text-gray-400 hover:text-white p-2 rounded-lg hover:bg-[#303133] transition truncate block";
+          div.className = "alu-history-item w-full text-left truncate block active";
           div.innerHTML = `💬 ${title}`;
+          div.style.display = "block";
+          div.style.width = "100%";
           div.addEventListener("click", () => {
-            // Recharger la discussion sélectionnée à l'écran
             document.getElementById("welcome-screen").classList.add("hidden");
             const chatMessages = document.getElementById("chat-messages");
             chatMessages.innerHTML = "";
             appendMessageUI("user", item.prompt);
-            const aiBubble = appendMessageUI("assistant", formatAIResponse(item.reply));
-            conversationHistory = [
-              { role: "user", content: item.prompt },
-              { role: "assistant", content: item.reply }
-            ];
+            appendMessageUI("assistant", formatAIResponse(item.reply));
+            conversationHistory = [{ role: "user", content: item.prompt }, { role: "assistant", content: item.reply }];
           });
           listContainer.appendChild(div);
         });
       }
-    }
-
-    function updateSidebarHistory(msg) {
-      const list = document.getElementById("history-list");
-      const empty = list.querySelector(".alu-history-empty");
-      if (empty) empty.remove();
     }
   </script>
 </body>
