@@ -77,82 +77,12 @@
       color: #8ab4f8;
     }
 
-    /* --- MENU DES MODELES EN BAS --- */
-    .alu-model-menu-bottom {
-      position: absolute;
-      bottom: 110%;
-      right: 0;
-      background-color: #1e1f20;
-      border: 1px solid #303133;
-      border-radius: 16px;
-      padding: 8px;
-      width: 240px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 40;
-      opacity: 0;
-      transform: translateY(10px) scale(0.95);
-      pointer-events: none;
-      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .alu-model-menu-bottom.show {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-    .alu-model-pill-btn {
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.2s;
-    }
-    .alu-model-pill-btn:hover {
-      background-color: rgba(255,255,255,0.08);
-    }
-
-    /* --- PILLULES DE SOURCE STYLE RECHERCHE GOOGLE --- */
-    .alu-source-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background-color: #2a2b2d;
-      border: 1px solid #303133;
-      border-radius: 12px;
-      padding: 2px 8px;
-      font-size: 11px;
-      color: #bdc1c6;
-      margin-left: 6px;
-      vertical-align: middle;
-      text-decoration: none;
-    }
-    .alu-source-badge:hover {
-      background-color: #333537;
-    }
-    .alu-source-icon {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-    }
-
     /* ==============================================================
-       CORRECTION HISTORIQUE RESPONSIVE ET SMARTPHONE EN DIRECT
+       CORRECTION RESPONSIVE COMPLÈTE POUR SMARTPHONES (MAX 768PX)
        ============================================================== */
     @media screen and (max-width: 768px) {
-      aside.alu-sidebar {
-        position: fixed !important;
-        top: 0 !important;
-        left: -100% !important;
-        width: 280px !important;
-        height: 100vh !important;
-        z-index: 9999 !important;
-        background-color: #1e1f20 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 5px 0 15px rgba(0,0,0,0.5) !important;
-      }
-      aside.alu-sidebar.active {
-        left: 0 !important;
-      }
       
+      /* Force le titre à s'adapter proprement sur les petits écrans sans casser */
       .alu-welcome-title, h1.alu-welcome-title {
         font-size: 1.6rem !important;
         line-height: 1.3 !important;
@@ -163,6 +93,7 @@
         word-wrap: break-word !important;
       }
 
+      /* Ajuste la barre du haut pour que rien ne sorte de l'écran tactile */
       .alu-topbar {
         padding: 8px !important;
         gap: 4px !important;
@@ -177,6 +108,7 @@
         white-space: nowrap !important;
       }
 
+      /* Espacement optimisé pour le bas de l'écran mobile */
       .alu-composer-wrap {
         padding: 0 8px 8px 8px !important;
       }
@@ -184,6 +116,7 @@
         padding: 8px !important;
       }
       
+      /* Affiche en permanence les boutons d'action d'historique sur mobile */
       .alu-history-actions {
         opacity: 1 !important;
       }
@@ -192,7 +125,6 @@
 </head>
 <body class="bg-[#131314] text-[#e3e3e3]">
 
-  <!-- ÉCRAN D'AUTHENTIFICATION -->
   <div id="auth-screen" class="fixed inset-0 bg-[#131314] z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1f20] border border-[#303133] p-8 rounded-2xl w-full max-w-md shadow-2xl">
       <div class="flex items-center gap-2 mb-6 justify-center">
@@ -226,11 +158,13 @@
     </div>
   </div>
 
-  <!-- APPLICATION PRINCIPALE -->
   <div class="alu-app hidden" id="app-container">
     
-    <aside class="alu-sidebar" id="alu-sidebar">
+    <aside class="alu-sidebar">
       <div class="alu-sidebar-top">
+        <button class="alu-menu-btn" id="mobile-sidebar-toggle">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="alu-brand">
           <div class="alu-brand-icon" style="background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem; font-weight: bold;">✦</div>
           <span class="alu-brand-name">Aluetoo</span>
@@ -284,18 +218,27 @@
       </div>
     </aside>
 
-    <!-- Fond assombri pour fermer le menu mobile -->
-    <div class="fixed inset-0 bg-black/60 z-[9990] hidden" id="sidebar-backdrop"></div>
+    <div class="alu-backdrop hidden" id="sidebar-backdrop"></div>
 
     <main class="alu-main">
       
       <div class="alu-topbar">
-        <div class="alu-topbar-left flex items-center gap-2">
-          <!-- Bouton Menu Mobile Rétabli et Forcé -->
-          <button class="p-2 text-gray-400 hover:text-white block md:hidden focus:outline-none" id="mobile-sidebar-toggle" style="z-index: 1000;">
-            <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
+        <div class="alu-topbar-left">
+          <button class="alu-topbar-brand" id="model-menu-toggle">
+            <span class="alu-topbar-title" id="current-model-title">Aluetoo Fast Lite ▾</span>
           </button>
-          <span class="text-xl font-semibold tracking-tight hidden md:inline">Aluetoo</span>
+          
+          <div class="alu-model-menu hidden" id="model-dropdown">
+            <button class="alu-model-opt" data-model="fast-lite">
+              Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
+            </button>
+            <button class="alu-model-opt" data-model="super-fast">
+              Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
+            </button>
+            <button class="alu-model-opt" data-model="pro">
+              Aluetoo Pro <span class="text-xs text-gray-500 ml-auto" id="count-pro">(5/5)</span>
+            </button>
+          </div>
         </div>
         <div class="alu-topbar-right">
           <button class="alu-upgrade-btn" id="upgrade-btn">
@@ -312,9 +255,9 @@
       </div>
 
       <div class="alu-composer-wrap">
-        <div class="alu-composer" id="composer-box" style="position: relative;">
+        <div class="alu-composer" id="composer-box">
           <div id="attached-file-preview" class="hidden flex items-center gap-2 mb-2 p-1.5 bg-[#131314] border border-[#303133] rounded-xl max-w-max text-xs">
-            <span class="material-symbols-outlined text-sm text-blue-400" id="file-icon-preview">description</span>
+            <span class="material-symbols-outlined text-sm text-blue-400">description</span>
             <span id="attached-file-name" class="text-gray-300 max-w-[150px] truncate">fichier.txt</span>
             <button class="text-gray-500 hover:text-red-400 ml-1" id="remove-file-btn"><span class="material-symbols-outlined text-xs">close</span></button>
           </div>
@@ -331,24 +274,8 @@
                 <span class="material-symbols-outlined">image</span>
               </button>
             </div>
-            
-            <div class="alu-composer-tools-right relative flex items-center gap-3">
-              <div class="alu-model-pill alu-model-pill-btn px-3 py-1.5 bg-[#2a2b2d] rounded-xl text-xs text-gray-300 flex items-center font-medium" id="input-model-indicator-btn">
-                <span id="input-model-indicator">Fast Lite</span>
-              </div>
-
-              <div class="alu-model-menu-bottom" id="model-dropdown-bottom">
-                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="fast-lite">
-                  Aluetoo Fast Lite <span class="text-xs text-gray-500 ml-auto" id="count-fast-lite">(20/20)</span>
-                </button>
-                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="super-fast">
-                  Aluetoo Super Fast <span class="text-xs text-gray-500 ml-auto" id="count-super-fast">(10/10)</span>
-                </button>
-                <button class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#2a2b2d] text-sm flex items-center transition alu-model-opt" data-model="llama4-scout">
-                  Llama 4 Scout <span class="text-xs text-gray-500 ml-auto" id="count-llama4">(Beta)</span>
-                </button>
-              </div>
-
+            <div class="alu-composer-tools-right" style="display: flex; align-items: center; gap: 12px;">
+              <span class="alu-model-pill" id="input-model-indicator">Fast Lite</span>
               <button class="alu-send-btn" id="send-btn" style="background: #333537; color: #7a7e84;" disabled>
                 <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
               </button>
@@ -359,7 +286,6 @@
     </main>
   </div>
 
-  <!-- POP-UP BONUS -->
   <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
       <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
@@ -384,14 +310,13 @@
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
-      "llama4-scout": { name: "Llama 4 Scout", apiName: "meta-llama/llama-4-scout-17b-16e-instruct", limit: 5, pill: "Llama 4 Scout" }
+      "pro": { name: "Aluetoo Pro", apiName: "llama-3.3-70b-versatile", limit: 5, pill: "Aluetoo Pro" }
     };
 
     let selectedModelKey = "fast-lite";
     let currentUser = null;
     let conversationHistory = [];
     let currentAttachedFile = null;
-    let currentAttachedFileBase64 = null; 
     let currentActiveChatId = null;
 
     function getUsage() {
@@ -399,11 +324,11 @@
       const SIX_HOURS = 6 * 60 * 60 * 1000;
       let data = localStorage.getItem(`alu_usage_${currentUser.email}`);
       if (!data) {
-        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "llama4-scout": 0 };
+        data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
       } else {
         data = JSON.parse(data);
         if (!data.timestamp || (now - data.timestamp) > SIX_HOURS) {
-          data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "llama4-scout": 0 };
+          data = { timestamp: now, "fast-lite": 0, "super-fast": 0, "pro": 0 };
         }
       }
       return data;
@@ -499,7 +424,7 @@
       const input = document.getElementById("chat-input");
       const composer = document.getElementById("composer-box");
 
-      if (usage[selectedModelKey] >= (modelsConfig[selectedModelKey].limit || 999)) {
+      if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) {
         if (selectedModelKey !== "fast-lite" && usage["fast-lite"] < modelsConfig["fast-lite"].limit) {
           switchModel("fast-lite");
           return;
@@ -519,10 +444,12 @@
       const usage = getUsage();
       document.getElementById("count-fast-lite").innerText = `(${modelsConfig["fast-lite"].limit - usage["fast-lite"]}/${modelsConfig["fast-lite"].limit})`;
       document.getElementById("count-super-fast").innerText = `(${modelsConfig["super-fast"].limit - usage["super-fast"]}/${modelsConfig["super-fast"].limit})`;
+      document.getElementById("count-pro").innerText = `(${modelsConfig["pro"].limit - usage["pro"]}/${modelsConfig["pro"].limit})`;
     }
 
     function switchModel(key) {
       selectedModelKey = key;
+      document.getElementById("current-model-title").innerText = modelsConfig[key].name + " ▾";
       document.getElementById("input-model-indicator").innerText = modelsConfig[key].pill;
       checkGlobalLimits();
     }
@@ -535,43 +462,19 @@
     }
 
     function setupUI() {
-      const modelToggleBtn = document.getElementById("input-model-indicator-btn");
-      const modelDropdownBottom = document.getElementById("model-dropdown-bottom");
+      const modelToggle = document.getElementById("model-menu-toggle");
+      const modelDropdown = document.getElementById("model-dropdown");
       const input = document.getElementById("chat-input");
       const sendBtn = document.getElementById("send-btn");
 
-      modelToggleBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        modelDropdownBottom.classList.toggle("show");
-      });
+      modelToggle.addEventListener("click", () => modelDropdown.classList.toggle("hidden"));
       
       document.querySelectorAll(".alu-model-opt").forEach(opt => {
         opt.addEventListener("click", (e) => {
           switchModel(e.currentTarget.getAttribute("data-model"));
-          modelDropdownBottom.classList.remove("show");
+          modelDropdown.classList.add("hidden");
         });
       });
-
-      // --- SCRIPT SIDEBAR MOBILE CORRIGÉ ET COUPLÉ ---
-      const sidebar = document.getElementById("alu-sidebar");
-      const sidebarToggle = document.getElementById("mobile-sidebar-toggle");
-      const backdrop = document.getElementById("sidebar-backdrop");
-
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          sidebar.classList.add("active");
-          backdrop.classList.remove("hidden");
-        });
-      }
-
-      if (backdrop) {
-        backdrop.addEventListener("click", () => {
-          sidebar.classList.remove("active");
-          backdrop.classList.add("hidden");
-        });
-      }
 
       input.addEventListener("input", () => {
         input.style.height = "auto";
@@ -603,8 +506,6 @@
         currentActiveChatId = null;
         document.getElementById("welcome-screen").classList.remove("hidden");
         input.style.height = "auto";
-        sidebar.classList.remove("active");
-        backdrop.classList.add("hidden");
       });
 
       document.getElementById("logout-btn").addEventListener("click", () => {
@@ -613,9 +514,7 @@
       });
 
       window.addEventListener("click", (e) => {
-        if (!modelToggleBtn.contains(e.target)) {
-          modelDropdownBottom.classList.remove("show");
-        }
+        if (!modelToggle.contains(e.target)) modelDropdown.classList.add("hidden");
       });
 
       document.getElementById("update-location-btn").addEventListener("click", () => {
@@ -626,41 +525,20 @@
       const realFileInput = document.getElementById("real-file-input");
       const filePreview = document.getElementById("attached-file-preview");
       const fileNameSpan = document.getElementById("attached-file-name");
-      const fileIconPreview = document.getElementById("file-icon-preview");
 
-      document.getElementById("attach-btn").addEventListener("click", () => {
-        realFileInput.removeAttribute("accept");
-        realFileInput.click();
-      });
-      
-      document.getElementById("image-btn").addEventListener("click", () => { 
-        realFileInput.accept = "image/*"; 
-        realFileInput.click(); 
-      });
+      document.getElementById("attach-btn").addEventListener("click", () => realFileInput.click());
+      document.getElementById("image-btn").addEventListener("click", () => { realFileInput.accept = "image/*"; realFileInput.click(); });
 
       realFileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) {
           currentAttachedFile = e.target.files[0];
           fileNameSpan.innerText = currentAttachedFile.name;
           filePreview.classList.remove("hidden");
-
-          if (currentAttachedFile.type.startsWith("image/")) {
-            fileIconPreview.innerText = "image";
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-              currentAttachedFileBase64 = evt.target.result;
-            };
-            reader.readAsDataURL(currentAttachedFile);
-          } else {
-            fileIconPreview.innerText = "description";
-            currentAttachedFileBase64 = null;
-          }
         }
       });
 
       document.getElementById("remove-file-btn").addEventListener("click", () => {
         currentAttachedFile = null;
-        currentAttachedFileBase64 = null;
         filePreview.classList.add("hidden");
         realFileInput.value = "";
       });
@@ -708,58 +586,29 @@
       let text = input.value.trim();
       if (!text && !currentAttachedFile) return;
 
-      // Détection automatique : Si une image est présente, on force l'utilisation exclusive du modèle llama-4-scout
-      let activeModelToUse = selectedModelKey;
-      if (currentAttachedFileBase64) {
-        activeModelToUse = "llama4-scout";
-      }
-
       const usage = getUsage();
-      if (usage[activeModelToUse] >= (modelsConfig[activeModelToUse].limit || 999)) { checkGlobalLimits(); return; }
+      if (usage[selectedModelKey] >= modelsConfig[selectedModelKey].limit) { checkGlobalLimits(); return; }
 
-      usage[activeModelToUse] += 1;
+      usage[selectedModelKey] += 1;
       saveUsage(usage);
 
-      let messagePayloadContent = [];
-
-      // Traitement automatique de l'image uniquement sur l'ID meta-llama/llama-4-scout-17b-16e-instruct
-      if (currentAttachedFileBase64 && activeModelToUse === "llama4-scout") {
-        messagePayloadContent.push({
-          type: "text",
-          text: text || "Analyse cette image."
-        });
-        messagePayloadContent.push({
-          type: "image_url",
-          image_url: {
-            url: currentAttachedFileBase64
-          }
-        });
-        appendMessageUI("user", `[Image jointe: ${currentAttachedFile.name}] \n` + text);
-      } else {
-        if (currentAttachedFile) {
-          text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
-        }
-        messagePayloadContent = text;
-        appendMessageUI("user", text);
+      if (currentAttachedFile) {
+        text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
+        currentAttachedFile = null;
+        document.getElementById("attached-file-preview").classList.add("hidden");
       }
-
-      currentAttachedFile = null;
-      currentAttachedFileBase64 = null;
-      document.getElementById("attached-file-preview").classList.add("hidden");
 
       input.value = "";
       input.style.height = "auto";
       document.getElementById("send-btn").disabled = true;
       document.getElementById("welcome-screen").classList.add("hidden");
 
-      conversationHistory.push({ role: "user", content: messagePayloadContent });
+      appendMessageUI("user", text);
+      conversationHistory.push({ role: "user", content: text });
 
-      const aiBubble = appendMessageUI("assistant", "");
-      const contentDiv = aiBubble.querySelector(".alu-msg-content");
+      const aiBubble = appendMessageUI("assistant", "...");
       const container = document.getElementById("conversation-container");
       container.scrollTop = container.scrollHeight;
-
-      let fullReply = "";
 
       try {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -769,46 +618,29 @@
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: modelsConfig[activeModelToUse].apiName,
+            model: modelsConfig[selectedModelKey].apiName,
             messages: [
-              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014. Tu disposes de capacités multimodales permettant de lire et d'analyser les images reçues. Ajoute parfois des sources pertinentes sous forme de texte ou de mentions." },
+              { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014." },
               ...conversationHistory
             ],
-            temperature: 0.7,
-            stream: true
+            temperature: 0.7
           })
         });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
-
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              if (line.includes("[DONE]")) break;
-              try {
-                const json = JSON.parse(line.substring(6));
-                if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
-                  fullReply += json.choices[0].delta.content;
-                  contentDiv.innerHTML = formatAIResponse(fullReply);
-                  container.scrollTop = container.scrollHeight;
-                }
-              } catch (e) {}
-            }
-          }
+        const data = await response.json();
+        const contentDiv = aiBubble.querySelector(".alu-msg-content");
+        
+        if (data.choices && data.choices[0]) {
+          const reply = data.choices[0].message.content;
+          contentDiv.innerHTML = formatAIResponse(reply);
+          conversationHistory.push({ role: "assistant", content: reply });
+          
+          saveConversationToGlobal(text, reply);
+        } else {
+          contentDiv.innerText = "Erreur avec l'API.";
         }
-
-        conversationHistory.push({ role: "assistant", content: fullReply });
-        saveConversationToGlobal(typeof messagePayloadContent === 'string' ? messagePayloadContent : text, fullReply);
-
       } catch (err) {
-        contentDiv.innerText = "Erreur lors de la lecture ou de la communication en direct.";
+        aiBubble.querySelector(".alu-msg-content").innerText = "Erreur réseau.";
       }
 
       container.scrollTop = container.scrollHeight;
@@ -816,17 +648,10 @@
     }
 
     function formatAIResponse(text) {
-      let html = text
+      return text
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, "<br>");
-
-      if (html.toLowerCase().includes("youtube") && !html.includes("alu-source-badge")) {
-        html += ` <a href="https://www.youtube.com" target="_blank" class="alu-source-badge"><img src="https://www.youtube.com/s/desktop/282a325b/img/favicon_32x32.png" class="alu-source-icon">YouTube · Tech and Shoot +5</a>`;
-      } else if (html.toLowerCase().includes("samsung") && !html.includes("alu-source-badge")) {
-        html += ` <a href="https://fr.wikipedia.org" target="_blank" class="alu-source-badge"><img src="https://en.wikipedia.org/static/favicon/wikipedia.ico" class="alu-source-icon">Wikipédia</a>`;
-      }
-      return html;
     }
 
     function appendMessageUI(sender, text) {
@@ -838,7 +663,7 @@
         wrapper.innerHTML = `
           <div class="alu-msg-avatar" style="background: var(--gradient); border:none; color:white; font-size:12px; font-weight:bold;">✦</div>
           <div class="alu-msg-body">
-            <div class="alu-msg-content"><p>${text}</p></div>
+            <div class="alu-msg-content"><p>${text.replace(/\n/g, '<br>')}</p></div>
           </div>`;
       } else {
         wrapper.innerHTML = `
@@ -931,6 +756,7 @@
 
       items.forEach((item) => {
         const title = item.prompt.length > 18 ? item.prompt.substring(0, 18) + "..." : item.prompt;
+        
         const container = document.createElement("div");
         container.className = `alu-history-item-container ${item.pinned ? 'pinned' : ''}`;
         
@@ -946,20 +772,10 @@
           conversationHistory = item.history || [{ role: "user", content: item.prompt }, { role: "assistant", content: item.reply }];
           
           conversationHistory.forEach(msg => {
-            let contentToRender = "";
-            if (Array.isArray(msg.content)) {
-              const textObj = msg.content.find(c => c.type === "text");
-              contentToRender = textObj ? textObj.text : "";
-            } else {
-              contentToRender = msg.content;
-            }
-            appendMessageUI(msg.role, msg.role === 'assistant' ? formatAIResponse(contentToRender) : contentToRender);
+            appendMessageUI(msg.role, msg.role === 'assistant' ? formatAIResponse(msg.content) : msg.content);
           });
           const containerWrap = document.getElementById("conversation-container");
           containerWrap.scrollTop = containerWrap.scrollHeight;
-
-          document.getElementById("alu-sidebar").classList.remove("active");
-          document.getElementById("sidebar-backdrop").classList.add("hidden");
         });
 
         const actionsDiv = document.createElement("div");
@@ -968,11 +784,13 @@
         const pinIcon = document.createElement("span");
         pinIcon.className = `material-symbols-outlined alu-action-icon ${item.pinned ? 'pinned-active' : ''}`;
         pinIcon.innerText = "push_pin";
+        pinIcon.title = item.pinned ? "Désépingler" : "Épingler la discussion";
         pinIcon.addEventListener("click", (e) => togglePinChat(item.id, e));
 
         const deleteIcon = document.createElement("span");
         deleteIcon.className = "material-symbols-outlined alu-action-icon delete";
         deleteIcon.innerText = "delete";
+        deleteIcon.title = "Supprimer la discussion";
         deleteIcon.addEventListener("click", (e) => deleteChat(item.id, e));
 
         actionsDiv.appendChild(pinIcon);
