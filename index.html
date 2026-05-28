@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#131314">
   <title>Aluetoo AI</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -249,6 +250,26 @@
       }
     }
   </style>
+  <style id="alu-responsive-patch">
+    :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); --safe-left: env(safe-area-inset-left); --safe-right: env(safe-area-inset-right); --gradient: linear-gradient(90deg, #8ab4f8, #c58af9); }
+    html, body { height: 100%; overscroll-behavior: none; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+    body { padding-top: var(--safe-top); }
+    .alu-app { display: flex; height: 100dvh; width: 100vw; overflow: hidden; }
+    .alu-main { display: flex; flex-direction: column; flex: 1; min-width: 0; height: 100dvh; }
+    .alu-conversation { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    .alu-composer-wrap { padding-bottom: calc(8px + var(--safe-bottom)) !important; }
+    .alu-textarea { font-size: 16px !important; max-height: 40dvh; }
+    .alu-tool-btn, .alu-send-btn, .alu-action-icon { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .alu-msg-content { word-wrap: break-word; overflow-wrap: anywhere; }
+    .alu-msg-content table { display: block; overflow-x: auto; white-space: nowrap; }
+    .alu-msg-content pre, .alu-msg-content code { max-width: 100%; overflow-x: auto; }
+    img, video { max-width: 100%; height: auto; }
+    @media screen and (max-width: 1024px) { .alu-sidebar { width: min(85vw, 320px) !important; height: 100dvh !important; } .alu-history-actions { opacity: 1 !important; } }
+    @media screen and (max-width: 640px) { .alu-model-menu-bottom { right: 50% !important; transform: translateX(50%) translateY(10px) !important; width: min(90vw, 280px) !important; } .alu-model-menu-bottom.show { transform: translateX(50%) translateY(0) !important; } .alu-welcome-title { font-size: clamp(1.4rem, 7vw, 1.8rem) !important; } }
+    @media screen and (min-width: 1440px) { .alu-main { max-width: 1200px; margin: 0 auto; } }
+    @media screen and (max-height: 500px) and (orientation: landscape) { .alu-welcome { display: none !important; } }
+  </style>
+
 </head>
 <body class="bg-[#131314] text-[#e3e3e3]">
 
@@ -756,7 +777,8 @@
         if (currentAttachedFile.type.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(currentAttachedFile.name)) {
           isImageAttached = true;
         }
-        text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
+        text = `[Document Joint: ${currentAttachedFile.name}] 
+` + text;
         currentAttachedFile = null;
         document.getElementById("attached-file-preview").classList.add("hidden");
       }
@@ -803,7 +825,8 @@
           if (done) break;
 
           const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
+          const lines = chunk.split("
+");
 
           for (const line of lines) {
             if (line.startsWith("data: ")) {
@@ -858,7 +881,8 @@
       } else {
         wrapper.innerHTML = `
           <div class="alu-msg-body">
-            <div class="alu-msg-content"><p>${text.replace(/\n/g, '<br>')}</p></div>
+            <div class="alu-msg-content"><p>${text.replace(/
+/g, '<br>')}</p></div>
           </div>`;
       }
       holder.appendChild(wrapper);
