@@ -145,7 +145,7 @@
         z-index: 50 !important;
         transition: left 0.3s ease !important;
         background-color: #1e1f20 !important;
-        display: flex !important; /* On s'assure qu'elle garde sa structure interne */
+        display: flex !important;
       }
       .alu-sidebar.active {
         left: 0 !important;
@@ -190,7 +190,6 @@
 </head>
 <body class="bg-[#131314] text-[#e3e3e3]">
 
-  <!-- ÉCRAN D'AUTHENTIFICATION -->
   <div id="auth-screen" class="fixed inset-0 bg-[#131314] z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1f20] border border-[#303133] p-8 rounded-2xl w-full max-w-md shadow-2xl">
       <div class="flex items-center gap-2 mb-6 justify-center">
@@ -224,7 +223,6 @@
     </div>
   </div>
 
-  <!-- APPLICATION PRINCIPALE -->
   <div class="alu-app hidden" id="app-container">
     
     <aside class="alu-sidebar" id="alu-sidebar">
@@ -282,14 +280,12 @@
       </div>
     </aside>
 
-    <!-- Fond pour fermer le menu mobile -->
     <div class="fixed inset-0 bg-black/50 z-40 hidden" id="sidebar-backdrop"></div>
 
     <main class="alu-main">
       
       <div class="alu-topbar">
         <div class="alu-topbar-left flex items-center gap-2">
-          <!-- Bouton Menu pour mobile -->
           <button class="p-2 text-gray-400 hover:text-white block md:hidden focus:outline-none" id="mobile-sidebar-toggle">
             <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
           </button>
@@ -357,7 +353,6 @@
     </main>
   </div>
 
-  <!-- POP-UP BONUS -->
   <div id="bonus-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#1e1f20] border border-[#303133] p-6 rounded-2xl w-full max-w-sm shadow-2xl text-center">
       <h3 class="text-lg font-medium mb-2 text-white">🎁 Message Bonus Quotidien</h3>
@@ -382,7 +377,7 @@
     const modelsConfig = {
       "fast-lite": { name: "Aluetoo Fast Lite", apiName: "llama-3.1-8b-instant", limit: 20, pill: "Fast Lite" },
       "super-fast": { name: "Aluetoo Super Fast", apiName: "llama-3.3-70b-versatile", limit: 10, pill: "Super Fast" },
-      "pro": { name: "Aluetoo Pro", apiName: "llama-3.3-70b-versatile", limit: 5, pill: "Aluetoo Pro" }
+      "pro": { name: "Aluetoo Pro", apiName: "openai/gpt-oss-120b", limit: 5, pill: "Aluetoo Pro" }
     };
 
     let selectedModelKey = "fast-lite";
@@ -550,7 +545,6 @@
         });
       });
 
-      // --- LOGIQUE MOBILE FIXÉE POUR LA SIDEBAR ---
       const sidebar = document.getElementById("alu-sidebar");
       const sidebarToggle = document.getElementById("mobile-sidebar-toggle");
       const backdrop = document.getElementById("sidebar-backdrop");
@@ -622,8 +616,14 @@
       const filePreview = document.getElementById("attached-file-preview");
       const fileNameSpan = document.getElementById("attached-file-name");
 
-      document.getElementById("attach-btn").addEventListener("click", () => realFileInput.click());
-      document.getElementById("image-btn").addEventListener("click", () => { realFileInput.accept = "image/*"; realFileInput.click(); });
+      document.getElementById("attach-btn").addEventListener("click", () => {
+        realFileInput.removeAttribute("accept");
+        realFileInput.click();
+      });
+      document.getElementById("image-btn").addEventListener("click", () => {
+        realFileInput.accept = "image/*";
+        realFileInput.click();
+      });
 
       realFileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) {
@@ -677,7 +677,7 @@
       });
     }
 
-    // --- LOGIQUE LIVE STREAMING SANS SIMULATION EN DIRECT ---
+    // --- LOGIQUE LIVE STREAMING AVEC DETECTION D'IMAGE ---
     async function handleSendMessage() {
       const input = document.getElementById("chat-input");
       let text = input.value.trim();
@@ -689,7 +689,12 @@
       usage[selectedModelKey] += 1;
       saveUsage(usage);
 
+      // Détecter si un fichier de type image est joint avant de vider la variable
+      let isImageAttached = false;
       if (currentAttachedFile) {
+        if (currentAttachedFile.type.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(currentAttachedFile.name)) {
+          isImageAttached = true;
+        }
         text = `[Document Joint: ${currentAttachedFile.name}] \n` + text;
         currentAttachedFile = null;
         document.getElementById("attached-file-preview").classList.add("hidden");
@@ -710,6 +715,9 @@
 
       let fullReply = "";
 
+      // Sélection du modèle final (si image jointe -> modèle scout, sinon modèle de l'onglet actif)
+      const selectedModelName = isImageAttached ? "meta-llama/llama-4-scout-17b-16e-instruct" : modelsConfig[selectedModelKey].apiName;
+
       try {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
@@ -718,13 +726,13 @@
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: modelsConfig[selectedModelKey].apiName,
+            model: selectedModelName,
             messages: [
               { role: "system", content: "Tu es Aluetoo AI, un assistant intelligent créé par Léo Ciach. Léo Ciach est né en 2014. Ajoute parfois des sources pertinentes sous forme de texte ou de mentions." },
               ...conversationHistory
             ],
             temperature: 0.7,
-            stream: true // Activation du vrai flux natif en direct
+            stream: true
           })
         });
 
@@ -771,7 +779,6 @@
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, "<br>");
 
-      // Injection automatique de la source stylisée si des mots clés comme YouTube ou Wikipédia apparaissent
       if (html.toLowerCase().includes("youtube") && !html.includes("alu-source-badge")) {
         html += ` <a href="https://www.youtube.com" target="_blank" class="alu-source-badge"><img src="https://www.youtube.com/s/desktop/282a325b/img/favicon_32x32.png" class="alu-source-icon">YouTube · Tech and Shoot +5</a>`;
       } else if (html.toLowerCase().includes("samsung") && !html.includes("alu-source-badge")) {
@@ -780,8 +787,6 @@
       return html;
     }
 
-    // Le reste de tes fonctions d'historique (inchangé pour ne toucher à rien d'autre)
-    // [...] (loadSavedConversations, appendMessageUI, saveConversationToGlobal, etc. s'exécutent normalement ci-dessous)
     function appendMessageUI(sender, text) {
       const holder = document.getElementById("chat-messages");
       const wrapper = document.createElement("div");
